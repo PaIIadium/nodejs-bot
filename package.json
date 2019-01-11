@@ -1,0 +1,23 @@
+{
+  "name": "nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "test.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node":"8.10.0"
+
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^5.8.0",
+    "eslint-config-google": "^0.11.0"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.30.0",
+    "request": "^2.88.0"
+  }
+}
