@@ -39,19 +39,19 @@ async function compile(code) {
 
 bot.onText(/node (.+)/, (msg, match) => {
   const fromId = msg.chat.id;
-  setImmediate(()=>{
+  setTimeout(()=>{
   bot.sendMessage(fromId, 'Гавнокод компилируется...');
-  });
+  },500);
   const code = match[1];
-  setImmediate(()=>{
+  setTimeout(()=>{
    bot.sendMessage(fromId, 'test2');
-  });
+  },500);
   (async ()=> {
   const res = await compile(code);
   for (const value of res) {
-   setImmediate(()=>{
+   setTimeout(()=>{
     bot.sendMessage(fromId, value);
-   }) 
+   },500) 
   }
   })();
   
