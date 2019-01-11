@@ -10,17 +10,17 @@ const bot = new TelegramBot(token, { polling: true });
 function compile(code) {
   const sandbox = {
     console: {
-      log(a) {
-        sandbox.__res__.push(a);
+      log(...a) {
+        sandbox.__res__.push(...a);
       },
-      dir(a) {
-        sandbox.__res__.push(a);
+      dir(...a) {
+        sandbox.__res__.push(...a);
       },
-      info(a) {
-        sandbox.__res__.push(a);
+      info(...a) {
+        sandbox.__res__.push(...a);
       },
       error(a) {
-        sandbox.__res__.push(a);
+        sandbox.__res__.push(...a);
       },
     },
     __res__: []
