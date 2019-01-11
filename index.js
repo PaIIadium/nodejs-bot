@@ -7,7 +7,7 @@ const token = '700792770:AAHsyUZ-1vhIjdgW6RY7NMIg3WMQLkluIck';
 
 const bot = new TelegramBot(token, { polling: true });
 
-function compile(code) {
+async function compile(code) {
   const sandbox = {
     console: {
       log(...a) {
@@ -42,9 +42,12 @@ bot.onText(/node (.+)/, (msg, match) => {
   bot.sendMessage(fromId, 'Гавнокод компилируется...');
   console.log(msg);
   const code = match[1];
-  const res = compile(code);
+  (async ()=> {
+  const res = await compile(code);
   for (const value of res) {
     bot.sendMessage(fromId, value);
   }
+  })()
+  
 });
 
