@@ -29,7 +29,10 @@ async function compile(code) {
   const context = vm.createContext(sandbox);
   try {
     const script = new vm.Script(code);
-    script.runInContext(context);
+    script.runInContext(context);const res = compile(code);
+  for (const value of res) {
+    bot.sendMessage(fromId, value);
+  }
   } catch (error) {
     sandbox.__res__.push('Сэр, ваше дерьмо не работает!');
     sandbox.__res__.push(error.toString());
@@ -42,6 +45,7 @@ bot.onText(/node (.+)/, (msg, match) => {
   bot.sendMessage(fromId, 'Гавнокод компилируется...');
   console.log(msg);
   const code = match[1];
+   bot.sendMessage(fromId, 'test');
   (async ()=> {
   const res = await compile(code);
   for (const value of res) {
