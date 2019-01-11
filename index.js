@@ -38,20 +38,22 @@ async function compile(code) {
 }
 
 bot.onText(/node (.+)/, (msg, match) => {
+  let count = 100;
   const fromId = msg.chat.id;
   setTimeout(()=>{
   bot.sendMessage(fromId, 'Гавнокод компилируется...');
-  },500);
+  },0);
   const code = match[1];
   setTimeout(()=>{
    bot.sendMessage(fromId, 'test3');
-  },500);
+  },1000);
   (async ()=> {
   const res = await compile(code);
   for (const value of res) {
+    count += 200;
    setTimeout(()=>{
     bot.sendMessage(fromId, value);
-   },500) 
+   },count) 
   }
   })();
   
