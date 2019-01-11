@@ -44,7 +44,7 @@ bot.onText(/node (.+)/, (msg, match) => {
   },500);
   const code = match[1];
   setTimeout(()=>{
-   bot.sendMessage(fromId, 'test2');
+   bot.sendMessage(fromId, 'test3');
   },500);
   (async ()=> {
   const res = await compile(code);
