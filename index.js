@@ -48,10 +48,3 @@ bot.onText(/node (.+)/, (msg, match) => {
   }
 });
 
-// Простая команда без параметров.
-// bot.on('node', (msg) => {
-//   const chatId = msg.chat.id;
-//   // Фотография может быть: путь к файлу, поток(stream) или параметр file_id
-//   const photo = 'cats.png';
-//   bot.sendPhoto(chatId, photo, { caption: 'Милые котята' });
-// });
