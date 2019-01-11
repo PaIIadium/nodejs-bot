@@ -1,8 +1,8 @@
 {
-  "name": "nodejs",
+  "name": "heroku_bot",
   "version": "1.0.0",
   "description": "",
-  "main": "test.js",
+  "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
@@ -12,10 +12,6 @@
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "eslint": "^5.8.0",
-    "eslint-config-google": "^0.11.0"
-  },
   "dependencies": {
     "node-telegram-bot-api": "^0.30.0"
   }
