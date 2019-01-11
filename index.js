@@ -44,17 +44,17 @@ bot.onText(/node (.+)/, (msg, match) => {
   bot.sendMessage(fromId, 'Гавнокод компилируется...');
   },0);
   const code = match[1];
-  setTimeout(()=>{
-   bot.sendMessage(fromId, 'test4');
-  },1000);
   (async ()=> {
   const res = await compile(code);
   for (const value of res) {
-    count += 200;
+    count += 100;
    setTimeout(()=>{
     bot.sendMessage(fromId, value);
-   },count) 
+   },count) ;
   }
+    setTimeout(()=>{
+   bot.sendMessage(fromId, 'End');
+  },count + 50);
   })();
   
 });
