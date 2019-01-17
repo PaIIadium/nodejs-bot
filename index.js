@@ -34,9 +34,7 @@ bot.onText(/node (.+)/, (msg, match) => {
       }
     }
     if (stderr) {
-      console.error(`exec error: ${error}`);
       bot.sendMessage(fromId, 'Поздравляю, вы попали на допку ', stderr);
-      // return;
     }
 
   });
