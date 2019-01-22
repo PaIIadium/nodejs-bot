@@ -27,7 +27,7 @@ function replying(msg, match) {
   const userId = msg.chat.id;
   sendMessage(userId, 'Блин, опять в этом говне разбираться...');
   console.log('@' + msg.from.username + ': ' + match[1]);
-  const fcode = match.input.split('\n').join(' ').slice(4);
+  const fcode = match.input.split('\n').join('; ').slice(4);
   const code = escapeShellArg(fcode);
   exec(`timeout 1s node -e ${code}`, { }, (error, stdout, stderr) => {
     if (error && error.code === 1) sendMessage(userId, 'Паяльник мне в процессор...Что он написал?\n' + stderr);
