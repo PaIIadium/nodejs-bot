@@ -11,7 +11,7 @@ http.createServer((req, res) => {
   res.send('it is running\n');
 }).listen(process.env.PORT || 5000);
 
-const bot = new Bot('701084949:AAE6zp5Q5BDPgjmC8gqV2mbGsC6cxtfWt5g', { polling: true });
+const bot = new Bot('796127956:AAGBAY5LWVMU4JtnVWs878tlaT8i6_bF4Fw', { polling: true });
 const sendMessage = bot.sendMessage.bind(bot);
 
 function escapeShellArg(arg) {
