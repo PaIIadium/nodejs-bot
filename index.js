@@ -11,18 +11,24 @@ http.createServer((req, res) => {
   res.send('it is running\n');
 }).listen(process.env.PORT || 5000);
 
-const bot = new Bot('796127956:AAGBAY5LWVMU4JtnVWs878tlaT8i6_bF4Fw', { polling: true });
+const bot = new Bot('701084949:AAE6zp5Q5BDPgjmC8gqV2mbGsC6cxtfWt5g', { polling: true });
 const sendMessage = bot.sendMessage.bind(bot);
 
 function escapeShellArg(arg) {
   return `'${arg.replace(/'/g, '\'\\\'\'')}'`;
 }
 
+function rate(code) {
+  if (!code) return 0;
+  return Math.floor((Math.random() * 40) + 60);
+}
+
 function replying(msg, match) {
   const userId = msg.chat.id;
   sendMessage(userId, 'Блин, опять в этом говне разбираться...');
   console.log('@' + msg.from.username + ': ' + match[1]);
-  const code = escapeShellArg(match[1]);
+  const fcode = match.input.split('\n').join(' ').slice(4);
+  const code = escapeShellArg(fcode);
   exec(`timeout 1s node -e ${code}`, { }, (error, stdout, stderr) => {
     if (error && error.code === 1) sendMessage(userId, 'Паяльник мне в процессор...Что он написал?\n' + stderr);
     else if (!stdout) sendMessage(userId, 'Мне лень это считать, застрелитесь');
@@ -33,6 +39,7 @@ function replying(msg, match) {
       else sendMessage(userId, 'Флуд не пройдёт!');
     }
   });
+  const rating = rate(code);
+  sendMessage(userId, `Вы получаете ${rating}`);
 }
 bot.onText(/node (.+)/, replying);
-
