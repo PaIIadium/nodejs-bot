@@ -130,7 +130,7 @@ function replying(msg, match) {
 
 function sendShems(msg, match) {
   const res = match.input.split('\n').join('; ');
-  if (res.match(/экз|сесси|зач[ёе]т/i)) {
+  if (res.match(/[эе]кзам|сесс[іи]|зач[ёе]т/i)) {
     bot.sendSticker(msg.chat.id, stick.стандарт, { reply_to_message_id: msg.message_id });
   } else if (res.match(/допк/i)) {
     bot.sendSticker(msg.chat.id, stick.здрасте, { reply_to_message_id: msg.message_id });
@@ -140,9 +140,9 @@ function sendShems(msg, match) {
     bot.sendSticker(msg.chat.id, stick.угомонись, { reply_to_message_id: msg.message_id });
   } else if (res.match(/к[іи]та|коммун[іи]|комун[іи]/i)) {
     bot.sendSticker(msg.chat.id, stick.флаг, { reply_to_message_id: msg.message_id });
-  } else if (res.match(/код|джс|js|javascript/i)) {
+  } else if (res.match(/говнокод|джс|js|javascript/i)) {
     bot.sendSticker(msg.chat.id, stick.оборот, { reply_to_message_id: msg.message_id });
-  } else if (res.match(/оп[іи]л|бухл|алкогол|ковальськ|паровоз|ілл|пив|п[іи]нгв[іи]н/i)) {
+  } else if (res.match(/оп[іи]л|бухл|алкогол|коваль?сь?к|паровоз|ілл|пив|п[іи]нгв[іи]н/i)) {
     bot.sendMessage(msg.chat.id, '@kowalski0805');
   } else if (res.match(/мачендо|н[іи]к[іи]т/i)) {
     bot.sendMessage(msg.chat.id, '@kowalski0805');
