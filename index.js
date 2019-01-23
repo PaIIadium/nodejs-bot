@@ -141,11 +141,11 @@ function sendShems(msg, match) {
   } else if (res.match(/к[іи]та|коммун[іи]|комун[іи]/i)) {
     bot.sendSticker(msg.chat.id, stick.флаг, { reply_to_message_id: msg.message_id });
   } else if (res.match(/говнокод|джс|js|javascript/i)) {
-    bot.sendSticker(msg.chat.id, stick.оборот, { reply_to_message_id: msg.message_id });
+    bot.sendSticker(msg.chat.id, stick.оборотc);
   } else if (res.match(/оп[іи]л|бухл|алкогол|коваль?сь?к|паровоз|ілл|пив|п[іи]нгв[іи]н/i)) {
-    bot.sendMessage(msg.chat.id, '@kowalski0805');
+    bot.sendMessage(msg.chat.id, '@kowalski0805', { reply_to_message_id: msg.message_id });
   } else if (res.match(/мачендо|н[іи]к[іи]т/i)) {
-    bot.sendMessage(msg.chat.id, '@machendos');
+    bot.sendMessage(msg.chat.id, '@machendos', { reply_to_message_id: msg.message_id });
   }
 }
 
