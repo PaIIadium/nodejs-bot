@@ -59,8 +59,8 @@ function rate(code) {
     if (flag) res += num[str];
   }
   const ice = ['💩', '💩', '💩', '💩', '💩', '💩', '💩', '💩', '💩', '💩', ];
-  let index = 0;
-  for (let i = 0; i < res; i += 10)  ice[index++] = '🍦';
+  let index = 9;
+  for (let i = 0; i < res; i += 10)  ice[index--] = '';
   return ice.join('');
 }
 
