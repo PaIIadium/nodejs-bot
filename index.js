@@ -19,18 +19,23 @@ function rand(min, max) {
 }
 
 const num = {
-  '=>': rand(5, 10),
-  'for': rand(5, 10),
-  'function': rand(5, 10),
-  'return': rand(5, 10),
-  'class': rand(5, 10),
-  'prototype': rand(5, 10),
-  'console': rand(20, 40),
-  'while': rand(5, 10),
-  'log': rand(5, 10),
-  'set': rand(5, 10),
-  '.': rand(5, 10),
-  'use strict': rand(5, 10)
+  '=>': rand(1, 5),
+  'for': rand(1, 5),
+  'function': rand(1, 5),
+  'return': rand(1, 5),
+  'class': rand(1, 5),
+  'prototype': rand(1, 5),
+  'console': rand(1, 5),
+  'while': rand(1, 5),
+  'log': rand(1, 5),
+  'set': rand(1, 5),
+  '.': rand(1, 5),
+  'use strict': rand(1, 5),
+  'const': rand(1, 5),
+  'Promise': rand(1, 5),
+  'async': rand(1, 5),
+  'await': rand(1, 5),
+  'require': rand(1, 5),
 };
 
 const stick = {
@@ -76,7 +81,11 @@ function replying(msg, match) {
         sendMessage(userId,  `_Ты правда думаешь, что я буду это вычислять,_ @${msg.from.username}_?_`, { parse_mode: 'Markdown' });
         // bot.sendSticker(msg.chat.id, stick.совсембольной);
       } else {
-        sendMessage(userId, `_Что здесь происходит?.. Что_ @${msg.from.username} _написал?_\n\n` + '\`\`\`' + stderr.slice(0, stderr.indexOf('at')) + '\`\`\`', { parse_mode: 'Markdown' });
+        const a = stderr.split('\n').reverse().filter((_) => {
+          return _.indexOf('Error') === -1 ? 0 : 1;
+        });
+        const ind = stderr.split('\n').indexOf(a[0]);
+        sendMessage(userId, `_Что здесь происходит?.. Что_ @${msg.from.username} _написал?_\n\n` + '\`\`\`' + stderr.split('\n').slice(0, ind + 1).join('\n') + '\`\`\`', { parse_mode: 'Markdown' });
         // bot.sendSticker(msg.chat.id, stick.здрасте);
       }
     } else {
@@ -87,16 +96,16 @@ function replying(msg, match) {
      	if (arr.length < 52 && count < 1001) {
      		const res = '\`\`\` ' + arr.join('   |   ').slice(0, -4) + '\`\`\`';
      		// bot.sendSticker(msg.chat.id, stick.рука);
-     		sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '\n' + '_Индекатор гавнокода:_ ' + mark, { parse_mode: 'Markdown' });
+     		sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '\n' + '_Индикатор говнокода:_ ' + mark, { parse_mode: 'Markdown' });
      	}	else if (arr.length >= 52 && count < 1001) {
      			const res = '\`\`\` ' + arr.slice(0, 51).join('   |   ').slice(0, -4) + '\`\`\`';
      			// bot.sendSticker(msg.chat.id, stick.рука);
-       			sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '  _...Флуд_' + '\n' + '_Индекатор гавнокода:_ ' + mark, { parse_mode: 'Markdown' });
+       			sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '  _...Флуд_' + '\n' + '_Индикатор говнокода:_ ' + mark, { parse_mode: 'Markdown' });
     	}	else if (arr.length < 52 && count >= 1001) {
     			let res = '';
     			for (const value of arr) {
     				if ((res + value).length < 1001) {
-    					res += value + '   |   ';
+    					res += value + '   |   '
     				} else {
     					res += value.slice(999 - res.length);
     					break;
@@ -134,7 +143,7 @@ function sendShems(msg, match) {
     bot.sendSticker(msg.chat.id, stick.стандарт, { reply_to_message_id: msg.message_id });
   } else if (res.match(/допк/i)) {
     bot.sendSticker(msg.chat.id, stick.здрасте, { reply_to_message_id: msg.message_id });
-  } else if (res.match(/шемс|Т[іи]ма|метарх|т[іи]мур/i)) {
+  } else if (res.match(/Т[іи]ма|метарх|т[іи]мур/i)) {
     bot.sendSticker(msg.chat.id, stick.шапка, { reply_to_message_id: msg.message_id });
   } else if (res.match(/(джс|javascript|прога|js) (дерьмо|говно|лайно|херня)/i)) {
     bot.sendSticker(msg.chat.id, stick.угомонись, { reply_to_message_id: msg.message_id });
@@ -150,21 +159,22 @@ function sendShems(msg, match) {
 }
 
 const fn = () => {
-	let status = true;
-	const delay = (msg, match) => {
-		if (status) {
-			status = false;
-			setTimeout(() => (status = true), 1000);
-			replying(msg, match);			
-		} else {
-			setTimeout(delay, 300, msg, match);
-		}
-	}
-	return delay;
-}
+  let status = true;
+  const delay = (msg, match) => {
+    if (status) {
+      status = false;
+      setTimeout(() => (status = true), 1000);
+      replying(msg, match);
+    } else {
+      setTimeout(delay, 300, msg, match);
+    }
+  };
+  return delay;
+};
 
 const delay = fn();
 
 bot.onText(/node (.+)/, delay);
 
 bot.onText(/(.+)/, sendShems);
+
