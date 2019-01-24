@@ -139,15 +139,15 @@ function replying(msg, match) {
 
 function sendShems(msg, match) {
   const res = match.input.split('\n').join('; ');
-  if (res.match(/[эе]кз|сесси|зач[ёе]т|сесі|залік/i)) {
+  if (res.match(/[эе]кз|сесси|зач[ёе]т|сесі|залік|допка/i)) {
     bot.sendSticker(msg.chat.id, stick.надопку, { reply_to_message_id: msg.message_id });
-  } else if (res.match(/допк/i)) {
+  } else if (res.match(/коммуни|комуні/i)) {
     bot.sendSticker(msg.chat.id, stick.здрасте, { reply_to_message_id: msg.message_id });
   } else if (res.match(/Т[іи]ма|метарх|т[іи]мур/i)) {
     bot.sendSticker(msg.chat.id, stick.шапка, { reply_to_message_id: msg.message_id });
   } else if (res.match(/(джс|javascript|прога|js) (дерьмо|говно|лайно|херня)/i)) {
     bot.sendSticker(msg.chat.id, stick.угомонись, { reply_to_message_id: msg.message_id });
-  } else if (res.match(/кита|коммуни|комуні/i)) {
+  } else if (res.match(/кита/i)) {
     bot.sendSticker(msg.chat.id, stick.флаг, { reply_to_message_id: msg.message_id });
   } else if (res.match(/говнокод|джс|js|javascript/i)) {
     bot.sendSticker(msg.chat.id, stick.оборот);
@@ -179,4 +179,4 @@ bot.onText(/node (.+)/, delay);
 bot.onText(/(.+)/, sendShems);
 
 
-bot.onText(/\/start (.+)/, sendMessage(msg.chat.id, '\`\`\`Use "node" to compile your code. For example:' + '\n' + ' node console.log(\'Ave Marcus Aurelius\')\`\`\`'), { parse_mode: 'Markdown' });
+bot.onText(/\/start/, msg => sendMessage(msg.chat.id, 'Use "node" to compile your code. For example:' + '\n' + '\`\`\` node console.log(\'Ave Marcus Aurelius\')\`\`\`', { parse_mode: 'Markdown' }));
