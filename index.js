@@ -179,5 +179,4 @@ bot.onText(/node (.+)/, delay);
 bot.onText(/(.+)/, sendShems);
 
 
-bot.onText(/\/start (.+)/, sendMessage(msg.chat.id, '\`\`\`Use "node" to compile your code. For example: node 
-console.log(\'Ave Marcus Aurelius\')\`\`\`'), { parse_mode: 'Markdown' });
+bot.onText(/\/start (.+)/, sendMessage(msg.chat.id, '\`\`\`Use "node" to compile your code. For example:' + '\n' + ' node console.log(\'Ave Marcus Aurelius\')\`\`\`'), { parse_mode: 'Markdown' });
