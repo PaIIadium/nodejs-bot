@@ -140,7 +140,7 @@ function replying(msg, match) {
 function sendShems(msg, match) {
   const res = match.input.split('\n').join('; ');
   if (res.match(/[эе]кз|сесси|зач[ёе]т|сесі|залік/i)) {
-    bot.sendSticker(msg.chat.id, stick.стандарт, { reply_to_message_id: msg.message_id });
+    bot.sendSticker(msg.chat.id, stick.надопку, { reply_to_message_id: msg.message_id });
   } else if (res.match(/допк/i)) {
     bot.sendSticker(msg.chat.id, stick.здрасте, { reply_to_message_id: msg.message_id });
   } else if (res.match(/Т[іи]ма|метарх|т[іи]мур/i)) {
@@ -177,4 +177,9 @@ const delay = fn();
 bot.onText(/node (.+)/, delay);
 
 bot.onText(/(.+)/, sendShems);
+
+
+bot.onText(/\/start (.+)/, sendMessage(msg.chat.id, '```Use "node" to compile your code. For example: node 
+console.log(\'Ave Marcus Aurelius\')```'));
+
 
