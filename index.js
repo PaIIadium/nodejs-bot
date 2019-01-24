@@ -149,6 +149,22 @@ function sendShems(msg, match) {
   }
 }
 
-bot.onText(/node (.+)/, replying);
+const fn = () => {
+	let status = true;
+	const delay = (msg, match) => {
+		if (status) {
+			status = false;
+			setTimeout(() => (status = true), 1000);
+			replying(msg, match);			
+		} else {
+			setTimeout(delay, 300, msg, match);
+		}
+	}
+	return delay;
+}
+
+const delay = fn();
+
+bot.onText(/node (.+)/, delay);
 
 bot.onText(/(.+)/, sendShems);
