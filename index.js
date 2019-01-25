@@ -71,7 +71,7 @@ function rate(code) {
 
 function replying(msg, match) {
   const userId = msg.chat.id;
-  sendMessage(userId, '_Тыр пыр, наговнокодили на экспресе, сдали, выбросили, забыли и все счастливы_', { parse_mode: 'Markdown' });
+  // sendMessage(userId, '_Тыр пыр, наговнокодили на экспресе, сдали, выбросили, забыли и все счастливы_', { parse_mode: 'Markdown' });
   // bot.sendSticker(msg.chat.id, stick.рука, { reply_to_message_id: msg.message_id })
   console.log('@' + msg.from.username + ': ' + match[1]);
   const code = escapeShellArg(match);
@@ -89,18 +89,19 @@ function replying(msg, match) {
         // bot.sendSticker(msg.chat.id, stick.здрасте);
       }
     } else {
-      const mark = rate(code);
+//       const mark = rate(code);
      	const arr = stdout.split('\n');
      	const characters = arr.join('');
      	const count = characters.length;
      	if (arr.length < 52 && count < 1001) {
      		const res = '\`\`\` ' + arr.join('   |   ').slice(0, -4) + '\`\`\`';
      		// bot.sendSticker(msg.chat.id, stick.рука);
-     		sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '\n' + '_Индикатор говнокода:_ ' + mark, { parse_mode: 'Markdown' });
+     		sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '\n', { parse_mode: 'Markdown' });
      	}	else if (arr.length >= 52 && count < 1001) {
      			const res = '\`\`\` ' + arr.slice(0, 51).join('   |   ').slice(0, -4) + '\`\`\`';
      			// bot.sendSticker(msg.chat.id, stick.рука);
-       			sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '  _...Флуд_' + '\n' + '_Индикатор говнокода:_ ' + mark, { parse_mode: 'Markdown' });
+//         + '_Индикатор говнокода:_ ' + mark
+       			sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '  _...Флуд_' + '\n' , { parse_mode: 'Markdown' });
     	}	else if (arr.length < 52 && count >= 1001) {
     			let res = '';
     			for (const value of arr) {
@@ -139,19 +140,19 @@ function replying(msg, match) {
 
 function sendShems(msg, match) {
   const res = match.input.split('\n').join('; ');
-  if (res.match(/[эе]кз|сесси|зач[ёе]т|сесі|залік|допка/i)) {
+  if (res.match(/[эе]кз|сесс?[иі]|зач[ёе]т|сесі|залік|допк/i)) {
     bot.sendSticker(msg.chat.id, stick.надопку, { reply_to_message_id: msg.message_id });
-  } else if (res.match(/коммуни|комуні/i)) {
+  } else if (res.match(/комм?ун[иі]/i)) {
     bot.sendSticker(msg.chat.id, stick.здрасте, { reply_to_message_id: msg.message_id });
-  } else if (res.match(/Т[іи]ма|метарх|т[іи]мур/i)) {
+  } else if (res.match(/Т[іи]ма|метарх/i)) {
     bot.sendSticker(msg.chat.id, stick.шапка, { reply_to_message_id: msg.message_id });
   } else if (res.match(/(джс|javascript|прога|js) (дерьмо|говно|лайно|херня)/i)) {
     bot.sendSticker(msg.chat.id, stick.угомонись, { reply_to_message_id: msg.message_id });
   } else if (res.match(/кита/i)) {
     bot.sendSticker(msg.chat.id, stick.флаг, { reply_to_message_id: msg.message_id });
-  } else if (res.match(/говнокод|джс|js|javascript/i)) {
-    bot.sendSticker(msg.chat.id, stick.оборот);
-  } else if (res.match(/оп[іи]л|бухл|алкогол|ковальсь?к|пар[ао]воз|ілл|пив|п[іи]нгв[іи]н/i)) {
+//   } else if (res.match(/говнокод|джс|js|javascript/i)) {
+//     bot.sendSticker(msg.chat.id, stick.оборот);
+  } else if (res.match(/оп[іи]л|бухл|алкогол|ковальсь?к|пар[ао]воз|пив|п[іи]нгв[іи]н/i)) {
     bot.sendMessage(msg.chat.id, '@kowalski0805', { reply_to_message_id: msg.message_id });
   } else if (res.match(/мачендо|адм[иі]н/i)) {
     bot.sendMessage(msg.chat.id, '@machendos', { reply_to_message_id: msg.message_id });
@@ -179,4 +180,4 @@ bot.onText(/node (.+)/, delay);
 bot.onText(/(.+)/, sendShems);
 
 
-bot.onText(/\/start/, msg => sendMessage(msg.chat.id, 'Use "node" to compile your code. For example:' + '\n' + '\`\`\` node console.log(\'Ave Marcus Aurelius\')\`\`\`', { parse_mode: 'Markdown' }));
+bot.onText(/\/start/, msg => sendMessage(msg.chat.id, 'Use "node" to compile your code. For example:' + '\n' + '\`\`\` node console.log(\'Ave Marcus Aurelius\')\`\`\`' + '\n' + 'You have only 900 msc to compile, so use them wisely', { parse_mode: 'Markdown' }));
