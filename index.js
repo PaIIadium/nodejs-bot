@@ -10,7 +10,9 @@ const bot = new Bot('724668528:AAGugqpjdQzAHXTHfrdm0W3Cqz7VgyJXBn0', { polling: 
 const sendMessage = bot.sendMessage.bind(bot);
 
 function escapeShellArg(match) {
-  const res =	match.input.split('\n').join(' ').slice(4);
+  const reg = /^\/\//
+  const res =	match.input.split('\n').map(el => el.match(reg) ? '' : el).join(' ').slice(4);
+  
   return `'${res.replace(/'/g, '\'\\\'\'')}'`;
 }
 
