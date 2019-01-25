@@ -142,16 +142,17 @@ function replying(msg, match) {
 
 function sendShems(msg, match) {
   const res = match.input.split('\n').join('; ');
-  if (res.match(/[эе]кз|сесс?[иі]|зач[ёе]т|сесі|залік|допк/i)) {
-    bot.sendSticker(msg.chat.id, stick.надопку, { reply_to_message_id: msg.message_id });
-  } else if (res.match(/комм?ун[иі]/i)) {
-    bot.sendSticker(msg.chat.id, stick.здрасте, { reply_to_message_id: msg.message_id });
-  } else if (res.match(/Т[іи]ма|метарх/i)) {
+//   if (res.match(/[эе]кз|сесс?[иі]|зач[ёе]т|сесі|залік|допк/i)) {
+//     bot.sendSticker(msg.chat.id, stick.надопку, { reply_to_message_id: msg.message_id });
+//   } else if (res.match(/комм?ун[иі]/i)) {
+//     bot.sendSticker(msg.chat.id, stick.здрасте, { reply_to_message_id: msg.message_id });
+//   } else
+    if (res.match(/Т[іи]ма|метарх/i)) {
     bot.sendSticker(msg.chat.id, stick.шапка, { reply_to_message_id: msg.message_id });
   } else if (res.match(/(джс|javascript|прога|js) (дерьмо|говно|лайно|херня)/i)) {
     bot.sendSticker(msg.chat.id, stick.угомонись, { reply_to_message_id: msg.message_id });
-  } else if (res.match(/кита/i)) {
-    bot.sendSticker(msg.chat.id, stick.флаг, { reply_to_message_id: msg.message_id });
+//   } else if (res.match(/кита/i)) {
+//     bot.sendSticker(msg.chat.id, stick.флаг, { reply_to_message_id: msg.message_id });
 //   } else if (res.match(/говнокод|джс|js|javascript/i)) {
 //     bot.sendSticker(msg.chat.id, stick.оборот);
   } else if (res.match(/оп[іи]л|бухл|алкогол|ковальсь?к|пар[ао]воз|пив|п[іи]нгв[іи]н/i)) {
