@@ -124,16 +124,16 @@ function replying(msg, match) {
     			if (sliceArr.join('').length > 1001) {
     				for (const value of sliceArr) {
     					if ((res + value).length < 1001) {
-    						res += value + '\n';
+    						res += value + '   |   ';
     					} else {
     						res += value.slice(999 - res.length);
     						break;
     					}
     				}
     			} else {
-    				res = sliceArr.join('\n');
+    				res = sliceArr.join('   |   ');
     			}
-    			res = '\`\`\` ' + res + '\`\`\`';
+    			res = '\`\`\` ' + res.slice(0, -4) + '\`\`\`';
     			// bot.sendSticker(msg.chat.id, stick.рука);
     			sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '  _...Флуд_', { parse_mode: 'Markdown' });
     	}
@@ -158,7 +158,7 @@ function sendShems(msg, match) {
 //     bot.sendSticker(msg.chat.id, stick.оборот);
   } else if (res.match(/оп[іи]л|бухл|алкогол|ковальсь?к|пар[ао]воз|пив|п[іи]нгв[іи]н/i)) {
     bot.sendMessage(msg.chat.id, '@kowalski0805', { reply_to_message_id: msg.message_id });
-  } else if (res.match(/мачендо)) {
+  } else if (res.match(/мачендо|адм[иі]н/i)) {
     bot.sendMessage(msg.chat.id, '@machendos', { reply_to_message_id: msg.message_id });
   }
 }
