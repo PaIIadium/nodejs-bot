@@ -96,16 +96,16 @@ function replying(msg, match) {
      	const arr = stdout.split('\n');
      	const characters = arr.join('');
      	const count = characters.length;
-     	if (arr.length < 52 && count < 1001) {
+     	if (arr.length < 26 && count < 1001) {
      		const res = '\`\`\` ' + arr.join('\n') + '\`\`\`';
      		// bot.sendSticker(msg.chat.id, stick.рука);
      		sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '\n', { parse_mode: 'Markdown' });
-     	}	else if (arr.length >= 52 && count < 1001) {
+     	}	else if (arr.length >= 26 && count < 1001) {
      			const res = '\`\`\` ' + arr.slice(0, 51).join('\n') + '\`\`\`';
      			// bot.sendSticker(msg.chat.id, stick.рука);
 //         + '_Индикатор говнокода:_ ' + mark
        			sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '  _...Флуд_' + '\n' , { parse_mode: 'Markdown' });
-    	}	else if (arr.length < 52 && count >= 1001) {
+    	}	else if (arr.length < 26 && count >= 1001) {
     			let res = '';
     			for (const value of arr) {
     				if ((res + value).length < 1001) {
@@ -118,8 +118,8 @@ function replying(msg, match) {
     			if (res) res = '\`\`\` ' + res + '\`\`\`';
     			// bot.sendSticker(msg.chat.id, stick.рука);
     			sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '  _...Флуд_', { parse_mode: 'Markdown' });
-    	}	else if (arr.length >= 52 && count >= 1001) {
-    			const sliceArr = arr.slice(0, 51);
+    	}	else if (arr.length >= 26 && count >= 1001) {
+    			const sliceArr = arr.slice(0, 25);
     			let res = '';
     			if (sliceArr.join('').length > 1001) {
     				for (const value of sliceArr) {
