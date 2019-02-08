@@ -124,7 +124,7 @@ function replying(msg, match) {
     			if (sliceArr.join('').length > 1001) {
     				for (const value of sliceArr) {
     					if ((res + value).length < 1001) {
-    						res += value + ' \n';
+    						res += value + '\n';
     					} else {
     						res += value.slice(999 - res.length);
     						break;
