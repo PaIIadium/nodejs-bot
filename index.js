@@ -78,7 +78,7 @@ function replying(msg, match) {
   // bot.sendSticker(msg.chat.id, stick.рука, { reply_to_message_id: msg.message_id })
   console.log('@' + msg.from.username + ': ' + match[1]);
   const code = escapeShellArg(match);
-  if (code.match(/require('child_process')|require('fs')|process.env.TOKEN/i)) {
+  if (code.match(/require('child_process')|require('fs')|process.env.TOKEN/i)===null) {
     sendMessage(userId,  `Ломай меня иначе`, { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
   } else {
     exec(`timeout 1s node -e ${code}`, (error, stdout, stderr) => {
