@@ -6,6 +6,7 @@ const Bot = require('node-telegram-bot-api');
 const { exec } = require('child_process');
 const token = process.env.TOKEN;
 const bot = new Bot(token, { polling: true });
+console.log(token);
 
 const sendMessage = bot.sendMessage.bind(bot);
 
@@ -20,28 +21,25 @@ function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-
-
-
-// const num = {
-//   '=>': rand(1, 5),
-//   'for': rand(1, 5),
-//   'function': rand(1, 5),
-//   'return': rand(1, 5),
-//   'class': rand(1, 5),
-//   'prototype': rand(1, 5),
-//   'console': rand(1, 5),
-//   'while': rand(1, 5),
-//   'log': rand(1, 5),
-//   'set': rand(1, 5),
-//   '.': rand(1, 5),
-//   'use strict': rand(1, 5),
-//   'const': rand(1, 5),
-//   'Promise': rand(1, 5),
-//   'async': rand(1, 5),
-//   'await': rand(1, 5),
-//   'require': rand(1, 5),
-// };
+const num = {
+  '=>': rand(1, 5),
+  'for': rand(1, 5),
+  'function': rand(1, 5),
+  'return': rand(1, 5),
+  'class': rand(1, 5),
+  'prototype': rand(1, 5),
+  'console': rand(1, 5),
+  'while': rand(1, 5),
+  'log': rand(1, 5),
+  'set': rand(1, 5),
+  '.': rand(1, 5),
+  'use strict': rand(1, 5),
+  'const': rand(1, 5),
+  'Promise': rand(1, 5),
+  'async': rand(1, 5),
+  'await': rand(1, 5),
+  'require': rand(1, 5),
+};
 
 const stick = {
   галстук: 'CAADAgADRAADqEwxBiTzDRtGUkCjAg',
@@ -80,7 +78,10 @@ function replying(msg, match) {
   // bot.sendSticker(msg.chat.id, stick.рука, { reply_to_message_id: msg.message_id })
   console.log('@' + msg.from.username + ': ' + match[1]);
   const code = escapeShellArg(match);
-  exec(`timeout 1s node -e ${code}`, (error, stdout, stderr) => {
+  if (code.match(/require('child_process')|require('fs')|process.env.TOKEN/i)) {
+    sendMessage(userId,  `Ломай меня иначе`, { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
+  } else {
+    exec(`timeout 1s node -e ${code}`, (error, stdout, stderr) => {
     if (error && error.code) {
       if (error.code == 124) {
         sendMessage(userId,  `Timed out`, { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
@@ -141,6 +142,7 @@ function replying(msg, match) {
     	}
     }
   });
+ }
 }
 
 // function sendShems(msg, match) {
