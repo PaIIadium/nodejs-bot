@@ -158,7 +158,7 @@ function sendShems(msg, match) {
 //     bot.sendSticker(msg.chat.id, stick.оборот);
   } else if (res.match(/оп[іи]л|бухл|алкогол|ковальсь?к|пар[ао]воз|пив|п[іи]нгв[іи]н/i)) {
     bot.sendMessage(msg.chat.id, '@kowalski0805', { reply_to_message_id: msg.message_id });
-  } else if (res.match(/мачендо|адм[иі]н/i)) {
+  } else if (res.match(/мачендо)) {
     bot.sendMessage(msg.chat.id, '@machendos', { reply_to_message_id: msg.message_id });
   }
 }
