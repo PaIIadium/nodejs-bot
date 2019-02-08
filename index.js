@@ -6,6 +6,7 @@ const Bot = require('node-telegram-bot-api');
 const { exec } = require('child_process');
 const token = process.env.TOKEN;
 const bot = new Bot(token, { polling: true });
+console.log(token);
 
 const sendMessage = bot.sendMessage.bind(bot);
 
