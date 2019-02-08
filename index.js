@@ -4,8 +4,8 @@ process.env['NTBA_FIX_319'] = 1;
 
 const Bot = require('node-telegram-bot-api');
 const { exec } = require('child_process');
-
-const bot = new Bot('724668528:AAGugqpjdQzAHXTHfrdm0W3Cqz7VgyJXBn0', { polling: true });
+const token = process.env.TOKEN;
+const bot = new Bot(token, { polling: true });
 
 const sendMessage = bot.sendMessage.bind(bot);
 
@@ -96,11 +96,11 @@ function replying(msg, match) {
      	const characters = arr.join('');
      	const count = characters.length;
      	if (arr.length < 52 && count < 1001) {
-     		const res = '\`\`\` ' + arr.join('\n') + '\`\`\`';
+     		const res = '\`\`\` ' + arr.join('   |   ').slice(0, -4) + '\`\`\`';
      		// bot.sendSticker(msg.chat.id, stick.рука);
      		sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '\n', { parse_mode: 'Markdown' });
      	}	else if (arr.length >= 52 && count < 1001) {
-     			const res = '\`\`\` ' + arr.slice(0, 51).join('\n') + '\`\`\`';
+     			const res = '\`\`\` ' + arr.slice(0, 51).join('   |   ').slice(0, -4) + '\`\`\`';
      			// bot.sendSticker(msg.chat.id, stick.рука);
 //         + '_Индикатор говнокода:_ ' + mark
        			sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '  _...Флуд_' + '\n' , { parse_mode: 'Markdown' });
@@ -108,13 +108,13 @@ function replying(msg, match) {
     			let res = '';
     			for (const value of arr) {
     				if ((res + value).length < 1001) {
-    					res += value + '\n'
+    					res += value + '   |   '
     				} else {
     					res += value.slice(999 - res.length);
     					break;
     				}
     			}
-    			if (res) res = '\`\`\` ' + res + '\`\`\`';
+    			if (res) res = '\`\`\` ' + res.slice(0, -4) + '\`\`\`';
     			// bot.sendSticker(msg.chat.id, stick.рука);
     			sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '  _...Флуд_', { parse_mode: 'Markdown' });
     	}	else if (arr.length >= 52 && count >= 1001) {
@@ -130,9 +130,9 @@ function replying(msg, match) {
     					}
     				}
     			} else {
-    				res = sliceArr.join('\n');
+    				res = sliceArr.join('   |   ');
     			}
-    			res = '\`\`\` ' + res + '\`\`\`';
+    			res = '\`\`\` ' + res.slice(0, -4) + '\`\`\`';
     			// bot.sendSticker(msg.chat.id, stick.рука);
     			sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '  _...Флуд_', { parse_mode: 'Markdown' });
     	}
