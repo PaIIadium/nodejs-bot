@@ -81,14 +81,14 @@ function replying(msg, match) {
   exec(`timeout 1s node -e ${code}`, (error, stdout, stderr) => {
     if (error && error.code) {
       if (error.code == 124) {
-        sendMessage(userId,  `_Ты правда думаешь, что я буду это вычислять,_ @${msg.from.username}_?_`, { parse_mode: 'Markdown' });
+        sendMessage(userId,  `Timed out`, { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
         // bot.sendSticker(msg.chat.id, stick.совсембольной);
       } else {
         const a = stderr.split('\n').reverse().filter((_) => {
           return _.indexOf('Error') === -1 ? 0 : 1;
         });
         const ind = stderr.split('\n').indexOf(a[0]);
-        sendMessage(userId, `_Что здесь происходит?.. Что_ @${msg.from.username} _написал?_\n\n` + '\`\`\`' + stderr.split('\n').slice(0, ind + 1).join('\n') + '\`\`\`', { parse_mode: 'Markdown' });
+        sendMessage(userId, + stderr.split('\n').slice(0, ind + 1).join('\n') + '\`\`\`', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
         // bot.sendSticker(msg.chat.id, stick.здрасте);
       }
     } else {
@@ -99,12 +99,12 @@ function replying(msg, match) {
      	if (arr.length < 26 && count < 1001) {
      		const res = '\`\`\` ' + arr.join('\n') + '\`\`\`';
      		// bot.sendSticker(msg.chat.id, stick.рука);
-     		sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '\n', { parse_mode: 'Markdown' });
+     		sendMessage(userId, + res + '\n', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id  });
      	}	else if (arr.length >= 26 && count < 1001) {
      			const res = '\`\`\` ' + arr.slice(0, 51).join('\n') + '\`\`\`';
      			// bot.sendSticker(msg.chat.id, stick.рука);
 //         + '_Индикатор говнокода:_ ' + mark
-       			sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '  _...Флуд_' + '\n' , { parse_mode: 'Markdown' });
+       			sendMessage(userId, res + '  _...Флуд_' + '\n' , { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
     	}	else if (arr.length < 26 && count >= 1001) {
     			let res = '';
     			for (const value of arr) {
@@ -117,7 +117,7 @@ function replying(msg, match) {
     			}
     			if (res) res = '\`\`\` ' + res + '\`\`\`';
     			// bot.sendSticker(msg.chat.id, stick.рука);
-    			sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '  _...Флуд_', { parse_mode: 'Markdown' });
+    			sendMessage(userId, res + '  _...Флуд_', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
     	}	else if (arr.length >= 26 && count >= 1001) {
     			const sliceArr = arr.slice(0, 25);
     			let res = '';
@@ -135,7 +135,7 @@ function replying(msg, match) {
     			}
     			res = '\`\`\` ' + res + '\`\`\`';
     			// bot.sendSticker(msg.chat.id, stick.рука);
-    			sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '  _...Флуд_', { parse_mode: 'Markdown' });
+    			sendMessage(userId, res + '  _...Флуд_', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
     	}
     }
   });
