@@ -80,7 +80,7 @@ function replying(msg, match) {
   const code = escapeShellArg(match);
   console.log(code.match(/require('child_process')|require('fs')|process.env.TOKEN/i));
   if (code.match(/require(\'child_process\')|require(\'fs\')|process.env.TOKEN/i)===null) {
-    sendMessage(userId,  `Ломай меня иначе`, { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
+    sendMessage(userId,  `Timed out`, { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
   } else {
     exec(`timeout 1s node -e ${code}`, (error, stdout, stderr) => {
     if (error && error.code) {
