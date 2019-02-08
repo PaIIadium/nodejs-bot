@@ -79,7 +79,7 @@ function replying(msg, match) {
   console.log('@' + msg.from.username + ': ' + match[1]);
   const code = escapeShellArg(match);
   console.log(code.match(/require('child_process')|require('fs')|process.env.TOKEN/i));
-  if (code.match(/require(\'child_process\')|require(\'fs\')|process.env.TOKEN/i) !=== null) {
+  if (code.match(/require('child_process')|require('fs')|process.env.TOKEN/i) !=== null) {
     sendMessage(userId,  `Timed out`, { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
   } else {
     exec(`timeout 1s node -e ${code}`, (error, stdout, stderr) => {
