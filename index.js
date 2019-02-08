@@ -131,7 +131,7 @@ function replying(msg, match) {
     					}
     				}
     			} else {
-    				res = sliceArr.join('   |   ');
+    				res = sliceArr.join('\n');
     			}
     			res = '\`\`\` ' + res.slice(0, -4) + '\`\`\`';
     			// bot.sendSticker(msg.chat.id, stick.рука);
