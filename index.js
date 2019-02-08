@@ -124,16 +124,16 @@ function replying(msg, match) {
     			if (sliceArr.join('').length > 1001) {
     				for (const value of sliceArr) {
     					if ((res + value).length < 1001) {
-    						res += value + '   |   ';
+    						res += value + ' \n';
     					} else {
     						res += value.slice(999 - res.length);
     						break;
     					}
     				}
     			} else {
-    				res = sliceArr.join('   |   ');
+    				res = sliceArr.join('\n');
     			}
-    			res = '\`\`\` ' + res.slice(0, -4) + '\`\`\`';
+    			res = '\`\`\` ' + res + '\`\`\`';
     			// bot.sendSticker(msg.chat.id, stick.рука);
     			sendMessage(userId, `_С ума сойти, оно даже скомпилировалось,_ @${msg.from.username}_,_ \n` + res + '  _...Флуд_', { parse_mode: 'Markdown' });
     	}
