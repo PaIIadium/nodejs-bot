@@ -88,7 +88,7 @@ function replying(msg, match) {
           return _.indexOf('Error') === -1 ? 0 : 1;
         });
         const ind = stderr.split('\n').indexOf(a[0]);
-        sendMessage(userId, + stderr.split('\n').slice(0, ind + 1).join('\n') + '\`\`\`', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
+        sendMessage(userId, stderr.split('\n').slice(0, ind + 1).join('\n') + '\`\`\`', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
         // bot.sendSticker(msg.chat.id, stick.здрасте);
       }
     } else {
@@ -99,7 +99,7 @@ function replying(msg, match) {
      	if (arr.length < 26 && count < 1001) {
      		const res = '\`\`\` ' + arr.join('\n') + '\`\`\`';
      		// bot.sendSticker(msg.chat.id, stick.рука);
-     		sendMessage(userId, + res + '\n', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id  });
+     		sendMessage(userId, res + '\n', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id  });
      	}	else if (arr.length >= 26 && count < 1001) {
      			const res = '\`\`\` ' + arr.slice(0, 51).join('\n') + '\`\`\`';
      			// bot.sendSticker(msg.chat.id, stick.рука);
