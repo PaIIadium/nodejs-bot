@@ -111,7 +111,7 @@ function replying(msg, match) {
     				if ((res + value).length < 1001) {
     					res += value + '\n'
     				} else {
-    					res += value.slice(999 - res.length);
+    					res += value.slice(1001 - res.length);
     					break;
     				}
     			}
@@ -126,7 +126,7 @@ function replying(msg, match) {
     					if ((res + value).length < 1001) {
     						res += value + '\n';
     					} else {
-    						res += value.slice(999 - res.length);
+    						res += value.slice(1001 - res.length);
     						break;
     					}
     				}
