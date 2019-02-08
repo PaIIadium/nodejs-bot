@@ -157,9 +157,9 @@ function replying(msg, match) {
 //   } else if (res.match(/говнокод|джс|js|javascript/i)) {
 //     bot.sendSticker(msg.chat.id, stick.оборот);
 //   } else if (res.match(/оп[іи]л|бухл|алкогол|ковальсь?к|пар[ао]воз|пив|п[іи]нгв[іи]н/i)) {
-    bot.sendMessage(msg.chat.id, '@kowalski0805', { reply_to_message_id: msg.message_id });
+//     bot.sendMessage(msg.chat.id, '@kowalski0805', { reply_to_message_id: msg.message_id });
 //   } else if (res.match(/мачендо|адм[иі]н/i)) {
-    bot.sendMessage(msg.chat.id, '@machendos', { reply_to_message_id: msg.message_id });
+//     bot.sendMessage(msg.chat.id, '@machendos', { reply_to_message_id: msg.message_id });
 //   }
 // }
 
@@ -181,7 +181,7 @@ const delay = fn();
 
 bot.onText(/node (.+)/, delay);
 
-bot.onText(/(.+)/, sendShems);
+// bot.onText(/(.+)/, sendShems);
 
 
 bot.onText(/\/start/, msg => sendMessage(msg.chat.id, 'Use "node" to compile your code. For example:' + '\n' + 'node console.log(\'Ave\');' + '\n' + 'setTimeout(() => console.log(\'Marcus Aurelius\'), 500);' + '\n' + 'You have only 900 msc to compile, so use them wisely' + '\n' + 'Rules:'+ '\n' + '1.Insert your code right after the keyword <node>'+ '\n' + '2.Use semicolons!', { parse_mode: 'Markdown' }));
