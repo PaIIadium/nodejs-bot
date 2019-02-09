@@ -102,6 +102,7 @@ function replying(msg, match) {
       }
     } else {
 //       const mark = rate(code);
+	    console.log(stdout);
      	const arr = stdout.split('\n');
      	const characters = arr.join('');
      	const count = characters.length;
