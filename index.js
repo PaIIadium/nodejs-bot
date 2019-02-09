@@ -6,7 +6,6 @@ const Bot = require('node-telegram-bot-api');
 const { exec } = require('child_process');
 const token = process.env.TOKEN;
 const bot = new Bot(token, { polling: true });
-console.log(token);
 
 const sendMessage = bot.sendMessage.bind(bot);
 
@@ -72,17 +71,25 @@ function rate(code) {
   return ice.join('');
 }
 
+const safeRequire = `
+const __oldRequire = require;
+require = function(lib) {
+	if (lib !== 'fs' && lib !== 'child_process') __oldRequire(lib);
+	else console.log('You can not use 'fs' or 'child_process' libs');
+}
+`
+
 function replying(msg, match) {
   const userId = msg.chat.id;
   // sendMessage(userId, '_Тыр пыр, наговнокодили на экспресе, сдали, выбросили, забыли и все счастливы_', { parse_mode: 'Markdown' });
   // bot.sendSticker(msg.chat.id, stick.рука, { reply_to_message_id: msg.message_id })
   console.log('@' + msg.from.username + ': ' + match[1]);
-  const code = escapeShellArg(match);
+  const code = escapeShellArg(safeRequire + match);
   console.log(code.match(/require('child_process')|require('fs')|process.env.TOKEN/i));
   if (code.match(/require('child_process')|require('fs')|process.env.TOKEN/i) !== null) {
     sendMessage(userId,  `Timed out`, { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
   } else {
-    exec(`timeout 1s node -e ${code}`, (error, stdout, stderr) => {
+    exec(`timeout 1s node -e ${code}`, { env: { TOKEN: 'Любопытной Варваре на базаре нос оторвали' } } (error, stdout, stderr) => {
     if (error && error.code) {
       if (error.code == 124) {
         sendMessage(userId,  `Timed out`, { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
