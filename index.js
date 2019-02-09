@@ -4,8 +4,8 @@ process.env['NTBA_FIX_319'] = 1;
 
 const Bot = require('node-telegram-bot-api');
 const { exec } = require('child_process');
-// const token = process.env.TOKEN;
-const bot = new Bot('724668528:AAHm1ZrH6XP3ZKPAeeo74BrMYpUcoYeQg5g', { polling: true });
+const token = '724668528:AAHm1ZrH6XP3ZKPAeeo74BrMYpUcoYeQg5g';
+const bot = new Bot(token , { polling: true });
 
 const sendMessage = bot.sendMessage.bind(bot);
 
