@@ -12,9 +12,11 @@ const sendMessage = bot.sendMessage.bind(bot);
 const safeRequire = `const wrap = () => {\n
 	const req = require;\n
 	return lib => {\n
-	if (lib !== 'fs' && lib !== 'child_process') return req(lib);\n
-	else console.log('You can not use "fs" or "child_process" libs');\n
-	process.exit(0);\n
+	if {
+	  (lib !== 'fs' && lib !== 'child_process') return req(lib);\n
+	} else {
+	  console.log('You can not use "fs" or "child_process" libs');\n
+	  process.exit(0);}\n
 }\n
 require = wrap();\n
 `
