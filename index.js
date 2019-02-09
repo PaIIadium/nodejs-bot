@@ -4,14 +4,22 @@ process.env['NTBA_FIX_319'] = 1;
 
 const Bot = require('node-telegram-bot-api');
 const { exec } = require('child_process');
-const token = process.env.TOKEN;
-const bot = new Bot(token, { polling: true });
+// const token = process.env.TOKEN;
+const bot = new Bot('724668528:AAHm1ZrH6XP3ZKPAeeo74BrMYpUcoYeQg5g', { polling: true });
 
 const sendMessage = bot.sendMessage.bind(bot);
 
+const safeRequire = `const NNNoldRequire = require;\n
+require = function(lib) {\n
+	if (lib !== 'fs' && lib !== 'child_process') return NNNoldRequire(lib);\n
+	else console.log('You can not use "fs" or "child_process" libs');\n
+	process.exit(0);\n
+};\n
+`
+
 function escapeShellArg(match) {
   const reg = /\/\//
-  const res =	match.input.split('\n').map(el => (el.match(reg) ? el.slice(0, el.indexOf('\/\/')) : el)).join(' ').slice(4);
+  const res =	(safeRequire + match.input.slice(4)).split('\n').map(el => (el.match(reg) ? el.slice(0, el.indexOf('\/\/')) : el)).join(' ');
   
   return `'${res.replace(/'/g, '\'\\\'\'')}'`;
 }
@@ -71,14 +79,6 @@ function rate(code) {
   return ice.join('');
 }
 
-// const safeRequire = `
-// const __oldRequire = require;
-// require = function(lib) {
-// 	if (lib !== 'fs' && lib !== 'child_process') __oldRequire(lib);
-// 	else console.log('You can not use 'fs' or 'child_process' libs');
-// }
-// `
-
 function replying(msg, match) {
   const userId = msg.chat.id;
   // sendMessage(userId, '_Тыр пыр, наговнокодили на экспресе, сдали, выбросили, забыли и все счастливы_', { parse_mode: 'Markdown' });
@@ -89,9 +89,10 @@ function replying(msg, match) {
     exec(`timeout 1s node -e ${code}`, { env: { TOKEN: 'Любопытной Варваре на базаре нос оторвали' } }, (error, stdout, stderr) => {
     if (error && error.code) {
       if (error.code == 124) {
-        sendMessage(userId,  `Timed out`, { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
+        sendMessage(userId, `Timed out`, { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
         // bot.sendSticker(msg.chat.id, stick.совсембольной);
       } else {
+      	console.log(stderr);
         const a = stderr.split('\n').reverse().filter((_) => {
           return _.indexOf('Error') === -1 ? 0 : 1;
         });
