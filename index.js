@@ -9,7 +9,7 @@ const bot = new Bot(token , { polling: true });
 
 const sendMessage = bot.sendMessage.bind(bot);
 
-const safeRequire = `const wrap = () => {\n
+const safeRequire = `const __W__r__A__p__ = () => {\n
 	const req = require;\n
 	return (lib) => {\n
 	if (lib !== 'fs' && lib !== 'child_process') {\n
@@ -19,7 +19,7 @@ const safeRequire = `const wrap = () => {\n
 	  process.exit(0);}\n
   };\n
 };\n
-require = wrap();\n
+require = __W__r__A__p__();\n
 `
 
 
