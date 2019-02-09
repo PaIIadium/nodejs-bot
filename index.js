@@ -11,7 +11,7 @@ const sendMessage = bot.sendMessage.bind(bot);
 
 const safeRequire = `const __NNNoldRequire__ = require;\n
 require = function(lib) {\n
-	if (lib !== 'fs' && lib !== 'child_process') return NNNoldRequire(lib);\n
+	if (lib !== 'fs' && lib !== 'child_process') return __NNNoldRequire__(lib);\n
 	else console.log('You can not use "fs" or "child_process" libs');\n
 	process.exit(0);\n
 };\n
