@@ -84,6 +84,7 @@ function replying(msg, match) {
   // sendMessage(userId, '_Тыр пыр, наговнокодили на экспресе, сдали, выбросили, забыли и все счастливы_', { parse_mode: 'Markdown' });
   // bot.sendSticker(msg.chat.id, stick.рука, { reply_to_message_id: msg.message_id })
   console.log('@' + msg.from.username + ': ' + match[1]);
+  console.log(token);
   const code = escapeShellArg(safeRequire + match);
     exec(`timeout 1s node -e ${code}`, { env: { TOKEN: 'Любопытной Варваре на базаре нос оторвали' } }, (error, stdout, stderr) => {
     if (error && error.code) {
