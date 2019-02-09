@@ -85,11 +85,7 @@ function replying(msg, match) {
   // bot.sendSticker(msg.chat.id, stick.рука, { reply_to_message_id: msg.message_id })
   console.log('@' + msg.from.username + ': ' + match[1]);
   const code = escapeShellArg(safeRequire + match);
-  console.log(code.match(/require('child_process')|require('fs')|process.env.TOKEN/i));
-  if (code.match(/require('child_process')|require('fs')|process.env.TOKEN/i) !== null) {
-    sendMessage(userId,  `Timed out`, { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
-  } else {
-    exec(`timeout 1s node -e ${code}`, { env: { TOKEN: 'Любопытной Варваре на базаре нос оторвали' } } (error, stdout, stderr) => {
+    exec(`timeout 1s node -e ${code}`, { env: { TOKEN: 'Любопытной Варваре на базаре нос оторвали' } }, (error, stdout, stderr) => {
     if (error && error.code) {
       if (error.code == 124) {
         sendMessage(userId,  `Timed out`, { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
@@ -150,7 +146,6 @@ function replying(msg, match) {
     	}
     }
   });
- }
 }
 
 // function sendShems(msg, match) {
