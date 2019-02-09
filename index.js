@@ -9,7 +9,7 @@ const bot = new Bot('724668528:AAHm1ZrH6XP3ZKPAeeo74BrMYpUcoYeQg5g', { polling: 
 
 const sendMessage = bot.sendMessage.bind(bot);
 
-const safeRequire = `const NNNoldRequire = require;\n
+const safeRequire = `const __NNNoldRequire__ = require;\n
 require = function(lib) {\n
 	if (lib !== 'fs' && lib !== 'child_process') return NNNoldRequire(lib);\n
 	else console.log('You can not use "fs" or "child_process" libs');\n
@@ -91,12 +91,13 @@ function replying(msg, match) {
         sendMessage(userId, `Timed out`, { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
         // bot.sendSticker(msg.chat.id, stick.совсембольной);
       } else {
-      	console.log(stderr);
+      	// console.log(stderr.split('\n'));
         const a = stderr.split('\n').reverse().filter((_) => {
           return _.indexOf('Error') === -1 ? 0 : 1;
         });
-        const ind = stderr.split('\n').indexOf(a[0]);
-        sendMessage(userId, stderr.split('\n').slice(0, ind + 1).join('\n') + '\`\`\`', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
+        // console.log(a[0]);
+        // const ind = stderr.split('\n')[a[0]];
+        sendMessage(userId,'\`\`\` '  + a[0] + '\`\`\`', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
         // bot.sendSticker(msg.chat.id, stick.здрасте);
       }
     } else {
