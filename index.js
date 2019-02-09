@@ -85,7 +85,7 @@ function replying(msg, match) {
   // bot.sendSticker(msg.chat.id, stick.рука, { reply_to_message_id: msg.message_id })
   console.log('@' + msg.from.username + ': ' + match[1]);
   const code = escapeShellArg(match);
-    exec(`timeout 1s node -e ${code}`, { env: { TOKEN: 'Любопытной Варваре на базаре нос оторвали' } }, (error, stdout, stderr) => {
+    exec(`timeout 1s node -e ${code}`, (error, stdout, stderr) => {
     if (error && error.code) {
       if (error.code == 124) {
         sendMessage(userId, `Timed out`, { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
@@ -102,7 +102,6 @@ function replying(msg, match) {
       }
     } else {
 //       const mark = rate(code);
-	    console.log(stdout);
      	const arr = stdout.split('\n');
      	const characters = arr.join('');
      	const count = characters.length;
