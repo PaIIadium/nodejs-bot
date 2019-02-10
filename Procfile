@@ -1,1 +1,1 @@
-worker: firejail --seccomp node index.js
+worker: firejail node index.js
