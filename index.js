@@ -99,13 +99,13 @@ function replying(msg, match) {
         sendMessage(userId, `_Timed out_`, { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
         // bot.sendSticker(msg.chat.id, stick.совсембольной);
       } else {
-      	// console.log(stderr.split('\n'));
+      	console.log(stderr);
         const a = stderr.split('\n').reverse().filter((_) => {
           return _.indexOf('Error') === -1 ? 0 : 1;
         });
         // console.log(a[0]);
         // const ind = stderr.split('\n')[a[0]];
-	      console.log(2);
+	      //console.log(2);
         sendMessage(userId,'\`\`\` '  + a[0] + '\`\`\`', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
         // bot.sendSticker(msg.chat.id, stick.здрасте);
       }
