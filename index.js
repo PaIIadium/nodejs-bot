@@ -92,7 +92,7 @@ function replying(msg, match) {
   // bot.sendSticker(msg.chat.id, stick.рука, { reply_to_message_id: msg.message_id })
   console.log('@' + msg.from.username + ': ' + match[1]);
   const code = escapeShellArg(match);
-    exec(`timeout 1.3s node -e ${code}`, (error, stdout, stderr) => {
+    exec(`firejail --seccomp timeout 1.3s node -e ${code}`, (error, stdout, stderr) => {
     if (error && error.code) {
       if (error.code == 124) {
         sendMessage(userId, `Timed out`, { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
