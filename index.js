@@ -95,6 +95,7 @@ function replying(msg, match) {
     exec(`firejail --quiet timeout 1.3s node -e ${code}`, (error, stdout, stderr) => {
     if (error && error.code) {
       if (error.code == 124) {
+	      console.log(1);
         sendMessage(userId, `_Timed out_`, { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
         // bot.sendSticker(msg.chat.id, stick.совсембольной);
       } else {
@@ -104,6 +105,7 @@ function replying(msg, match) {
         });
         // console.log(a[0]);
         // const ind = stderr.split('\n')[a[0]];
+	      console.log(2);
         sendMessage(userId,'\`\`\` '  + a[0] + '\`\`\`', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
         // bot.sendSticker(msg.chat.id, stick.здрасте);
       }
@@ -115,11 +117,13 @@ function replying(msg, match) {
      	if (arr.length < 26 && count < 1001) {
      		const res = '\`\`\` ' + arr.join('\n') + '\`\`\`';
      		// bot.sendSticker(msg.chat.id, stick.рука);
+			console.log(3);
      		sendMessage(userId, res + '\n', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id  });
      	}	else if (arr.length >= 26 && count < 1001) {
      			const res = '\`\`\` ' + arr.slice(0, 51).join('\n') + '\`\`\`';
      			// bot.sendSticker(msg.chat.id, stick.рука);
 //         + '_Индикатор говнокода:_ ' + mark
+				console.log(4);
        			sendMessage(userId, res + '  _...Флуд_' + '\n' , { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
     	}	else if (arr.length < 26 && count >= 1001) {
     			let res = '';
@@ -133,6 +137,7 @@ function replying(msg, match) {
     			}
     			if (res) res = '\`\`\` ' + res + '\`\`\`';
     			// bot.sendSticker(msg.chat.id, stick.рука);
+				console.log(5);
     			sendMessage(userId, res + '  _...Флуд_', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
     	}	else if (arr.length >= 26 && count >= 1001) {
     			const sliceArr = arr.slice(0, 25);
@@ -151,6 +156,7 @@ function replying(msg, match) {
     			}
     			res = '\`\`\` ' + res + '\`\`\`';
     			// bot.sendSticker(msg.chat.id, stick.рука);
+				console.log(6);
     			sendMessage(userId, res + '  _...Флуд_', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
     	}
     }
