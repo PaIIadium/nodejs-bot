@@ -1,1 +1,1 @@
-worker: node index.js
+worker: unshare -p -r; node index.js
