@@ -1,1 +1,1 @@
-worker: firejail node index.js
+worker: firejaiuyl node index.js
