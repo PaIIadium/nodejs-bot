@@ -21,6 +21,7 @@ function replying(msg, match) {
   const code = escapeShellArg(match);
   exec(`timeout 1.3s node -e ${code}`, (error, stdout, stderr) => {
     if (error && error.code) {
+      console.log(error);
       if (error.code === 124) {
         sendMessage(userId, '_Timed out_', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
       } else {
