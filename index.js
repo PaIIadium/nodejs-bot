@@ -12,7 +12,7 @@ const sendMessage = bot.sendMessage.bind(bot);
 function escapeShellArg(match) {
   const reg = /\/\//;
   const res = (`timeout 1.5s node -e '` + match.input.slice(4) + `'`).split('\n').map(el => (el.match(reg) ? el.slice(0, el.indexOf('\/\/')) : el)).join(' ');
-  return `"${res.replace(/'/g, '\'\\\'\'')}"`;
+  return `'${res.replace(/'/g, '\'\\\'\'')}'`;
 }
 
 function replying(msg, match) {
