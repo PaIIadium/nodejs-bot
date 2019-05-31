@@ -11,7 +11,7 @@ const sendMessage = bot.sendMessage.bind(bot);
 
 function escapeShellArg(match) {
   const reg = /\/\//;
-  const res = (match.input.slice(4)).split('\n').map(el => (el.match(reg) ? el.slice(0, el.indexOf('\/\/')) : el)).join(' ');
+  const res = (`'timeout 1.5s node -e "` + match.input.slice(4) + `"'`).split('\n').map(el => (el.match(reg) ? el.slice(0, el.indexOf('\/\/')) : el)).join(' ');
   return `'${res.replace(/'/g, '\'\\\'\'')}'`;
 }
 
@@ -19,7 +19,7 @@ function replying(msg, match) {
   const userId = msg.chat.id;
   console.log('@' + msg.from.username + ': ' + match[1]);
   const code = escapeShellArg(match);
-  exec(`su nodeuser -c "timeout 1.5s node -e ${code}"`, (error, stdout, stderr) => {
+  exec(`su nodeuser -c ${code}`, (error, stdout, stderr) => {
     if (error && error.code) {
       console.log(error);
       if (error.code === 124) {
