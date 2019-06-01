@@ -17,7 +17,7 @@ function escapeShellArg(match) {
 
 function replying(msg) {
   if (msg.entities[0].type === 'bot_command' && msg.entities[0].offset === 0) {
-    const command = msg.text.match(/\/[a-z]+/)[0];
+    const command = msg.text.match(/\/[^ ]+/)[0];
     console.log(command);
     if (command === '/node') {
       const match = msg.text.slice(command.length);
