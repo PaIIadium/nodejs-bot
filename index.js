@@ -19,7 +19,7 @@ function replying(msg) {
   if (msg.entities[0].type === 'bot_command' && msg.entities[0].offset === 0) {
     const command = msg.text.match(/\/[^ ]+/)[0];
     console.log(command);
-    if (command === '/node') {
+    if (command === '/node@kompilatorBot') {
       const match = msg.text.slice(command.length);
       const userId = msg.chat.id; 
       console.log('@' + msg.from.username + ':' + match);
@@ -78,7 +78,7 @@ function replying(msg) {
           }
         }
       });
-    } else if (command === '/start') {
+    } else if (command === '/start@kompilatorBot') {
       sendMessage(msg.chat.id, 'Use "node" to compile your code. For example:' + '\n' + 'node console.log(\'Ave\');' + '\n' + 'setTimeout(() => console.log(\'Marcus Aurelius\'), 500);' + '\n' + 'You have only 900 msc to compile, so use them wisely' + '\n' + 'Rules:' + '\n' + '1.Insert your code right after the keyword <node>' + '\n' + '2.Use semicolons!', { parse_mode: 'Markdown' });
     }
   }
