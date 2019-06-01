@@ -15,6 +15,14 @@ function escapeShellArg(match) {
   return `'${res.replace(/'/g, '\'\\\'\'')}'`;
 }
 
+const parse = msg => {
+  let command;
+  if (msg.entities[0].type === 'bot_command' && msg.entities[0].offset === 0) {
+    command = msg.text.match(/\/[^ \n]+/)[0];
+  }
+  return command;
+}
+
 const queue = {
   arr: [],
   search(id) {
@@ -28,17 +36,19 @@ const queue = {
 	  return ind;
   },
   inQueue(msg) {
-	  if (this.arr.length) {
-      const numb = this.search(msg.from.id);
-      if (numb !== -1) {
-		    sendMessage(msg.chat.id, '_You are still in the queue. Before you: ' + numb + '_', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id  });
+    if (parse(msg) === '/node@compilatorBot') {
+      if (this.arr.length) {
+        const numb = this.search(msg.from.id);
+        if (numb !== -1) {
+          sendMessage(msg.chat.id, '_You are still in the queue. Before you: ' + numb + '_', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id  });
+        } else {
+          this.arr.push(msg);
+        }
       } else {
-		    this.arr.push(msg);
+        this.arr.push(msg);
+        replying(msg);
       }
-	  } else {
-      this.arr.push(msg);
-      replying(msg);
-	  }
+    }
   },
   fromQueue() {
     if (this.arr.length) replying(this.arr[0]);
