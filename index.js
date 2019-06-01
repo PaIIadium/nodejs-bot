@@ -25,7 +25,7 @@ function replying(msg) {
       const userId = msg.chat.id;
       console.log('@' + msg.from.username + ':' + match);
       const code = escapeShellArg(match);
-      exec(`echo ${code} | timeout 1.5s node`, (error, stdout, stderr) => {
+      exec(`echo ${code} | su nodeuser -c 'timeout 1.5s node'`, (error, stdout, stderr) => {
         if (error && error.code) {
           if (error.code === 124) {
             sendMessage(userId, '_Timed out_', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
