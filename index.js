@@ -36,7 +36,7 @@ const queue = {
 	  return ind;
   },
   inQueue(msg) {
-    if (parse(msg) === '/node@compilatorBot') {
+    if (parse(msg) === '/node@kompilatorBot') {
       if (this.arr.length) {
         const numb = this.search(msg.from.id);
         if (numb !== -1) {
