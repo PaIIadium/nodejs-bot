@@ -42,7 +42,7 @@ function replying(msg) {
               const res = '\`\`\` ' + arr.join('\n') + '\`\`\`';
               sendMessage(userId, res + '\n', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id  });
             }
-            } else if (arr.length >= 26 && count < 1001) {
+          } else if (arr.length >= 26 && count < 1001) {
             const res = '\`\`\` ' + arr.slice(0, 51).join('\n') + '\`\`\`';
             sendMessage(userId, res + '  _...Флуд_' + '\n', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
           } else if (arr.length < 26 && count >= 1001) {
