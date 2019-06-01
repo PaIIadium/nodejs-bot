@@ -16,12 +16,13 @@ function escapeShellArg(match) {
 }
 
 function replying(msg) {
+  console.log(msg.entities);
   if (msg.entities[0].type === 'bot_command' && msg.entities[0].offset === 0) {
-    const command = msg.text.match(/\/[^ ]+/)[0];
+    const command = msg.text.match(/\/[^ \n]+/)[0];
     console.log(command);
     if (command === '/node@kompilatorBot') {
       const match = msg.text.slice(command.length);
-      const userId = msg.chat.id; 
+      const userId = msg.chat.id;
       console.log('@' + msg.from.username + ':' + match);
       const code = escapeShellArg(match);
       exec(`echo ${code} | timeout 1.5s node`, (error, stdout, stderr) => {
@@ -29,7 +30,7 @@ function replying(msg) {
           if (error.code === 124) {
             sendMessage(userId, '_Timed out_', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
           } else {
-            const a = stderr.split('\n').reverse().filter((_) => _.indexOf('Error') === -1 ? 0 : 1);
+            const a = stderr.split('\n').reverse().filter((_) => (_.indexOf('Error') === -1 ? 0 : 1));
             sendMessage(userId, '\`\`\` '  + a[0] + '\`\`\`', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
           }
         } else {
