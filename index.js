@@ -15,17 +15,45 @@ function escapeShellArg(match) {
   return `'${res.replace(/'/g, '\'\\\'\'')}'`;
 }
 
+const queue = {
+  arr: [],
+  search(id) {
+	  let ind = -1;
+	  for (let i = 0; i < this.arr.length; i++) {
+      if (this.arr[i].from.id === id) {
+		    ind = i;
+		    break;
+      }
+	  }
+	  return ind;
+  },
+  inQueue(msg) {
+	  if (this.arr.length) {
+      const numb = this.search(msg.from.id);
+      if (numb !== -1) {
+		    sendMessage(msg.chat.id, '_You are still in the queue. Before you: ' + numb + '_', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id  });
+      } else {
+		    this.arr.push(msg);
+      }
+	  } else {
+      this.arr.push(msg);
+      replying(msg);
+	  }
+  },
+  fromQueue() {
+    if (this.arr.length) replying(this.arr[0]);
+  }
+};
+
 function replying(msg) {
-  console.log(msg.entities);
   if (msg.entities[0].type === 'bot_command' && msg.entities[0].offset === 0) {
     const command = msg.text.match(/\/[^ \n]+/)[0];
-    console.log(command);
     if (command === '/node@kompilatorBot') {
       const match = msg.text.slice(command.length);
       const userId = msg.chat.id;
       console.log('@' + msg.from.username + ':' + match);
       const code = escapeShellArg(match);
-      exec(`echo ${code} | su nodeuser -c 'timeout 1.5s node'`, (error, stdout, stderr) => {
+      exec(`echo ${code} | su nodeuser -c 'timeout 10s node'`, (error, stdout, stderr) => {
         if (error && error.code) {
           if (error.code === 124) {
             sendMessage(userId, '_Timed out_', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
@@ -78,6 +106,9 @@ function replying(msg) {
             sendMessage(userId, res + '  _...Флуд_', { parse_mode: 'Markdown', reply_to_message_id: msg.message_id });
           }
         }
+        console.log(0);
+        queue.arr.shift();
+        queue.fromQueue();
       });
     } else if (command === '/start@kompilatorBot') {
       sendMessage(msg.chat.id, 'Use "node" to compile your code. For example:' + '\n' + 'node console.log(\'Ave\');' + '\n' + 'setTimeout(() => console.log(\'Marcus Aurelius\'), 500);' + '\n' + 'You have only 900 msc to compile, so use them wisely' + '\n' + 'Rules:' + '\n' + '1.Insert your code right after the keyword <node>' + '\n' + '2.Use semicolons!', { parse_mode: 'Markdown' });
@@ -85,20 +116,4 @@ function replying(msg) {
   }
 }
 
-const fn = () => {
-  let status = true;
-  const delay = msg => {
-    if (status) {
-      status = false;
-      setTimeout(() => (status = true), 1500);
-      replying(msg);
-    } else {
-      setTimeout(delay, 300, msg);
-    }
-  };
-  return delay;
-};
-
-const delay = fn();
-
-bot.on('text', delay);
+bot.on('text', queue.inQueue.bind(queue));
