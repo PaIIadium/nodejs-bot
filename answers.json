@@ -1,0 +1,8 @@
+{
+    "onFlood": "_...Flood_",
+    "onEmpty": "_This code does not log anything_",
+    "onTimeout": "_Timed out_",
+    "onStart": "Use /node to compile your code. For example:\n/node ```console.log('Ave');_\n_setTimeout(() => console.log('Marcus Aurelius'), 500);```\nYou have limited time to compile so use it wisely.\nRules:\n1.Insert your code right after the command /node.\n2.Use semicolons!",
+    "onInQueueBefore": "_You are still in the queue. Before you: ",
+    "onInQueueAfter": "_"
+}
