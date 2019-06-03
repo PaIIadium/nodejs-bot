@@ -1,5 +1,5 @@
-{   "group": [1000, 25, true, []],
+{   "group": [1000, 25, true],
     "user": [1000, 25],
-    "global": [10, true, 2, [], []]
+    "global": [10, true, 2]
 }
 

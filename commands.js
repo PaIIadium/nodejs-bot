@@ -2,17 +2,18 @@
 
 const { exec } = require('child_process');
 const fs = require('fs');
-const { findHandle, escapeShellArg, sendMessage, checkStdout, inMono, formFlood, setOptMsg } = require('./functions');
+const { findHandle, escapeShellArg, sendMessage, checkStdout, inMono, formFlood, setOptMsg, changeSet } = require('./functions');
 const answers = JSON.parse(fs.readFileSync('./answers.json'));
+const adminId = +fs.readFileSync('./admins_id', 'utf8').trim();
 
-function onNode(msg, queue, settings, timeout) {
+function onNode(msg, queue, timeout, maxChars, maxLines) {
   const optionsMsg = setOptMsg(msg);
   const handle = findHandle(msg);
   const match = msg.text.slice(handle.length);
   const chatId = msg.chat.id;
   console.log('@' + msg.from.username + ':' + match);
   const code = escapeShellArg(match);
-  exec(`echo ${code} | su nodeuser -c 'timeout ${timeout}s node'`, (error, stdout, stderr) => {
+  exec(`echo ${code} | timeout ${timeout}s node`, (error, stdout, stderr) => {
     if (error && error.code) {
       if (error.code === 124) {
         sendMessage(chatId, answers.onTimeout, optionsMsg);
@@ -21,8 +22,6 @@ function onNode(msg, queue, settings, timeout) {
         sendMessage(chatId, inMono(a[0]), optionsMsg);
       }
     } else {
-      const maxChars = settings[0];
-      const maxLines = settings[1];
       const msgStat = checkStdout(stdout, maxLines, maxChars);
       if (msgStat[0] === 'empty') {
         sendMessage(chatId, answers.onEmpty, optionsMsg);
@@ -30,7 +29,7 @@ function onNode(msg, queue, settings, timeout) {
         const res = inMono(msgStat[1]);
         sendMessage(chatId, res, optionsMsg);
       } else {
-        const res = formFlood(msgStat[1]) + answers.onFlood;
+        const res = formFlood(msgStat[1], maxChars, maxLines) + answers.onFlood;
         sendMessage(chatId, res, optionsMsg);
       }
     }
@@ -44,9 +43,120 @@ function onStart(msg) {
   sendMessage(msg.chat.id, answers.onStart, optionsMsg);
 }
 
-// function onStatus(msg) {
-//   const optionsMsg = setOptMsg(msg);
-//   const s
-// }
+function onEnable(msg, groupSettings, bot, defaultSettings) {
+  const optionsMsg = setOptMsg(msg);
+  const chatMember = bot.getChatMember(msg.chat.id, msg.from.id);
+  if (chatMember === 'creator' || chatMember === 'administrator') {
+    changeSet('group', groupSettings, 'status', true, defaultSettings, msg.chat.id);
+    sendMessage(msg.chat.id, answers.onEnable, optionsMsg);
+  }
+}
 
-module.exports = { onNode, onStart };
+function onDisable(msg, groupSettings, bot, defaultSettings) {
+  const optionsMsg = setOptMsg(msg);
+  const chatMember = bot.getChatMember(msg.chat.id, msg.from.id);
+  if (chatMember === 'creator' || chatMember === 'administrator') {
+    changeSet('group', groupSettings, 'status', false, defaultSettings, msg.chat.id);
+    sendMessage(msg.chat.id, answers.onEnable, optionsMsg);
+  }
+}
+
+function onStatus(msg, status, maxChars, maxLines, timeout, maxInQueue) {
+  const optionsMsg = setOptMsg(msg);
+  sendMessage(msg.chat.id, `
+Current status: _${status.toUpperCase()}_
+Max characters: _${maxChars}_
+Max lines: _${maxLines}_
+Time limit: _${timeout} seconds_
+Max tasks per user: _${maxInQueue}_`,
+  optionsMsg);
+}
+
+function onGlobalEnable(msg, defaultSettings) {
+  const optionsMsg = setOptMsg(msg);
+  if (msg.from.id === adminId) {
+    changeSet('global', defaultSettings, 'status', true);
+    sendMessage(msg.chat.id, answers.onGlobalEnable, optionsMsg);
+  } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
+}
+
+function onGlobalDisable(msg, defaultSettings) {
+  const optionsMsg = setOptMsg(msg);
+  if (msg.from.id === adminId) {
+    changeSet('global', defaultSettings, 'status', false);
+    sendMessage(msg.chat.id, answers.onGlobalDisable, optionsMsg);
+  } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
+}
+
+function onMaxCharsGroup(msg, groupSettings, defaultSettings, bot) {
+  const optionsMsg = setOptMsg(msg);
+  const handle = findHandle(msg);
+  const match = +msg.text.slice(handle.length);
+  const chatMember = bot.getChatMember(msg.chat.id, msg.from.id);
+  if (chatMember === 'creator' || chatMember === 'administrator') {
+    if (match % 1 === 0 && match > 0 && match < 5001) {
+      changeSet('group', groupSettings, 'maxChars', match, defaultSettings, msg.chat.id);
+      sendMessage(msg.chat.id, answers.onSuccessfully, optionsMsg);
+    } else sendMessage(msg.chat.id, answers.onMaxCharsError, optionsMsg);
+  } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
+}
+
+function onMaxCharsUser(msg, userSettings, defaultSettings) {
+  const optionsMsg = setOptMsg(msg);
+  const handle = findHandle(msg);
+  const match = +msg.text.slice(handle.length);
+  if (match % 1 === 0 && match > 0 && match < 5001) {
+    changeSet('user', userSettings, 'maxChars', match, defaultSettings, msg.chat.id);
+    sendMessage(msg.chat.id, answers.onSuccessfully, optionsMsg);
+  } else sendMessage(msg.chat.id, answers.onMaxCharsError, optionsMsg);
+}
+
+function onMaxLinesGroup(msg, groupSettings, defaultSettings, bot) {
+  const optionsMsg = setOptMsg(msg);
+  const handle = findHandle(msg);
+  const match = +msg.text.slice(handle.length);
+  const chatMember = bot.getChatMember(msg.chat.id, msg.from.id);
+  if (chatMember === 'creator' || chatMember === 'administrator') {
+    if (match % 1 === 0 && match > 0 && match < 101) {
+      changeSet('group', groupSettings, 'maxLines', match, defaultSettings, msg.chat.id);
+      sendMessage(msg.chat.id, answers.onSuccessfully, optionsMsg);
+    } else sendMessage(msg.chat.id, answers.onMaxLinesError, optionsMsg);
+  } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
+}
+
+function onMaxLinesUser(msg, userSettings, defaultSettings) {
+  const optionsMsg = setOptMsg(msg);
+  const handle = findHandle(msg);
+  const match = +msg.text.slice(handle.length);
+  if (match % 1 === 0 && match > 0 && match < 101) {
+    changeSet('user', userSettings, 'maxLines', match, defaultSettings, msg.chat.id);
+    sendMessage(msg.chat.id, answers.onSuccessfully, optionsMsg);
+  } else sendMessage(msg.chat.id, answers.onMaxLinesError, optionsMsg);
+}
+
+function onTimeout(msg, defaultSettings) {
+  const optionsMsg = setOptMsg(msg);
+  const handle = findHandle(msg);
+  const match = +msg.text.slice(handle.length);
+  if (msg.from.id === adminId) {
+    if (match > 0) {
+      changeSet('global', defaultSettings, 'timeout', match);
+      sendMessage(msg.chat.id, answers.onSuccessfully, optionsMsg);
+    } else sendMessage(msg.chat.id, answers.onTimeoutError, optionsMsg);
+  } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
+}
+
+function onMaxTasksPerUser(msg, defaultSettings, queue) {
+  const optionsMsg = setOptMsg(msg);
+  const handle = findHandle(msg);
+  const match = +msg.text.slice(handle.length);
+  if (msg.from.id === adminId) {
+    if (match % 1 === 0 && match > 0) {
+      changeSet('global', defaultSettings, 'maxTasksPerUser', match);
+      queue.maxTasksPerUser = match;
+      sendMessage(msg.chat.id, answers.onSuccessfully, optionsMsg);
+    } else sendMessage(msg.chat.id, answers.onMaxTasksPerUserError, optionsMsg);
+  } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
+}
+
+module.exports = { onNode, onStart, onEnable, onStatus, onGlobalEnable, onGlobalDisable, onMaxCharsUser, onMaxLinesUser, onDisable, onMaxCharsGroup, onMaxLinesGroup, onTimeout, onMaxTasksPerUser };

@@ -2,21 +2,18 @@
 
 const fs = require('fs');
 const answers = JSON.parse(fs.readFileSync('./answers.json'));
-const { sendMessage, findSettings } = require('./functions');
-const { onNode, onStart, onStatus } = require('./commands');
-const { globalSettings, groupSettings, userSettings } = require('./collections');
+const { sendMessage, checkStatus, findSettings, setOptMsg } = require('./functions');
+const { onNode, onStart, onStatus, onEnable, onGlobalEnable, onGlobalDisable, onMaxCharsUser, onMaxLinesUser, onDisable, onMaxCharsGroup, onMaxLinesGroup, onTimeout, onMaxTasksPerUser } = require('./commands');
+const { defaultSettings, groupSettings, userSettings } = require('./collections');
+const bot = require('./bot');
 
-const commandList = new Map([
-  ['/node', onNode],
-  ['/start', onStart],
-  //['/status', onStatus]
-]);
+const globalSettings = defaultSettings.global;
 
 const parse = msg => {
   let command;
   if (msg.entities[0].type === 'bot_command' && msg.entities[0].offset === 0) {
     command = msg.text.match(/\/[^ \n@]+/)[0];
-    if (commandList.has(command)) return command;
+    return command;
   }
 };
 
@@ -24,9 +21,10 @@ const queue = {
   maxTasksPerUser: globalSettings[2],
   arr: [],
   search(id) {
+    console.log(this.maxTasksPerUser);
     const ind = [];
     for (let i = 0; i < this.arr.length; i++) {
-      if (this.arr[i].from.id === id) {
+      if (this.arr[i][0].from.id === id) {
         ind.push(i);
         if (ind.length === this.maxTasksPerUser) break;
       }
@@ -34,33 +32,59 @@ const queue = {
     return ind;
   },
   inQueue(msg) {
-    const optionsMsg = {
-      parse_mode: 'Markdown',
-      reply_to_message_id: msg.message_id
-    };
+    const optionsMsg = setOptMsg(msg);
     const command = parse(msg);
-    if (command === '/node') {
-      const settings = findSettings(msg.chat.type, msg.chat.id, groupSettings, userSettings);
-      console.log(settings);
-      if (this.arr.length) {
-        const numbs = this.search(msg.from.id);
-        if (numbs.length === this.maxTasksPerUser) {
-          const str = answers.onInQueueBefore + numbs.join(', ') + answers.onInQueueAfter;
-          sendMessage(msg.chat.id, str, optionsMsg);
+    const status = checkStatus(msg, globalSettings[1], groupSettings[2]);
+    if (command === '/status') {
+      const sets = findSettings(msg.chat.type, msg.chat.id, groupSettings, userSettings);
+      onStatus(msg, status, sets[0], sets[1], globalSettings[0], globalSettings[2]);
+    }
+    if (status === 'enabled') {
+      if (command === '/node') {
+        const sets = findSettings(msg.chat.type, msg.chat.id, groupSettings, userSettings);
+        console.log(sets);
+        const timeout = globalSettings[0];
+        const maxChars = sets[0];
+        const maxLines = sets[1];
+        if (this.arr.length) { //rewrite
+          const numbs = this.search(msg.from.id);
+          if (numbs.length === this.maxTasksPerUser) {
+            const str = answers.onInQueueBefore + numbs.join(', ') + answers.onInQueueAfter;
+            sendMessage(msg.chat.id, str, optionsMsg);
+          } else {
+            this.arr.push([msg, timeout, maxChars, maxLines]);
+          }
         } else {
-          this.arr.push(msg);
+          this.arr.push([msg, timeout, maxChars, maxLines]);
+          onNode(msg, this, timeout, maxChars, maxLines);
         }
-      } else {
-        this.arr.push(msg);
-        commandList.get('/node')(msg, this, settings, globalSettings[0]);
+      } else if (command === '/globalDisable') {
+        onGlobalDisable(msg, defaultSettings);
+      } else if (command === '/start') {
+        onStart(msg);
+      } else if (command === '/maxChars') {
+        if (msg.chat.type === 'private') onMaxCharsUser(msg, userSettings, defaultSettings);
+        else onMaxCharsGroup(msg, groupSettings, defaultSettings, bot);
+      } else if (command === '/maxLines') {
+        if (msg.chat.type === 'private') onMaxLinesUser(msg, userSettings, defaultSettings);
+        else onMaxLinesGroup(msg, groupSettings, defaultSettings);
+      } else if (command === '/disable' && msg.chat.type !== 'private') {
+        onDisable(msg, groupSettings, bot, defaultSettings);
+      } else if (command === '/timeout') {
+        onTimeout(msg, defaultSettings);
+      } else if (command === '/maxTasksPerUser') {
+        onMaxTasksPerUser(msg, defaultSettings, this);
       }
-    } else if (command) commandList.get(command)(msg);
+    } else if (status === 'locally disabled' && command === '/enable') {
+      onEnable(msg, groupSettings, bot, defaultSettings);
+    } else if (status === 'globally disabled' && command === '/globalEnable') {
+      onGlobalEnable(msg, defaultSettings);
+    }
   },
   fromQueue() {
     if (this.arr.length) {
-      const msg = this.arr[0];
-      const settings = findSettings(msg.chat.type, msg.chat.id, groupSettings, userSettings);
-      commandList.get('/node')(msg, this, settings, globalSettings[0]);
+      const pars = this.arr[0];
+      onNode(pars[0], this, pars[1], pars[2], pars[3]);
     }
   }
 };

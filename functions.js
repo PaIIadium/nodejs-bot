@@ -12,15 +12,15 @@ const findHandle = msg => msg.text.match(/\/[^ \n]+/)[0];
 
 const inMono = string => '\`\`\`\n' + string + '\`\`\`';
 
-const formFlood = lines => {
+const formFlood = (lines, maxChars, maxLines) => {
   let count = 0;
   let res = '';
   for (const value of lines) {
-    if ((res + value).length - count < 1000 && count < 25) {
+    if ((res + value).length - count < maxChars && count < maxLines) {
       res += value + '\n';
       count++;
     } else {
-      if (count < 25) res += value.slice(0, 1000 - res.length + count);
+      if (count < maxLines) res += value.slice(0, maxChars - res.length + count);
       break;
     }
   }
@@ -54,26 +54,90 @@ const parser = (str, def) => {
   return res;
 };
 
-const findSettings = (chatType, chatId, groupSettings, userSettings) => {
+const findSettings = (chatType, chatId, groupSettings, userSettings) => { //rewrite
   if (chatType === ('group' || 'supergroup')) {
     const settings = groupSettings.get(chatId);
     if (settings) {
       return settings;
     } else {
       const def = groupSettings.get(0);
-      groupSettings.set(chatId, def);
       return def;
     }
   } else {
-    const settings = groupSettings.get(chatId);
+    const settings = userSettings.get(chatId);
     if (settings) {
       return settings;
     } else {
       const def = userSettings.get(0);
-      userSettings.set(chatId, def);
       return def;
     }
   }
-}
+};
 
-module.exports = { findHandle, escapeShellArg, sendMessage, checkStdout, inMono, formFlood, setOptMsg, parser, findSettings };
+const checkStatus = (msg, globalStatus, groupStatus) => {
+  if (globalStatus) {
+    if (msg.chat.type === 'private') return 'enabled';
+    else if (groupStatus) return 'enabled';
+    else return 'locally disabled';
+  } else return 'globally disabled';
+};
+
+const changeSet = (type, data, param, value, defSets, id) => {
+  if (type === 'user') {
+    const set = data.get(id);
+    if (param === 'maxLines') {
+      if (set) {
+        set[1] = value;
+      } else {
+        const def = [...defSets.user];
+        def[1] = value;
+        data.set(id, def);
+      }
+    } else if (param === 'maxChars') {
+      if (set) {
+        set[0] = value;
+      } else {
+        const def = [...defSets.user];
+        def[0] = value;
+        data.set(id, def);
+      }
+    }
+  } else if (type === 'group') {
+    const set = data.get(id);
+    if (param === 'maxLines') {
+      if (set) {
+        set[1] = value;
+      } else {
+        const def = [...defSets.group];
+        def[1] = value;
+        data.set(id, def);
+      }
+    } else if (param === 'maxChars') {
+      if (set) {
+        set[0] = value;
+      } else {
+        const def = [...defSets.group];
+        def[0] = value;
+        data.set(id, def);
+      }
+    } else if (param === 'status') {
+      if (set) {
+        set[2] = value;
+      } else {
+        const def = [...defSets.group];
+        def[2] = value;
+        data.set(id, def);
+      }
+    }
+  } else if (type === 'global') {
+    if (param === 'maxTasksPerUser') {
+      data.global[2] = value;
+    } else if (param === 'timeout') {
+      data.global[0] = value;
+    } else if (param === 'status') {
+      data.global[1] = value;
+    }
+  }
+};
+
+module.exports = { findHandle, escapeShellArg, sendMessage, checkStdout, inMono, formFlood, setOptMsg, parser, findSettings, checkStatus, changeSet };

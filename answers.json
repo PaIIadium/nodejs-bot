@@ -4,5 +4,15 @@
     "onTimeout": "_Timed out_",
     "onStart": "Use /node to compile your code. For example:\n/node ```console.log('Ave');_\n_setTimeout(() => console.log('Marcus Aurelius'), 500);```\nYou have limited time to compile so use it wisely.\nRules:\n1.Insert your code right after the command /node.\n2.Use semicolons!",
     "onInQueueBefore": "_You are still in the queue. Before you: ",
-    "onInQueueAfter": "_"
+    "onInQueueAfter": "_",
+    "onEnable": "_Bot enabled_",
+    "onDisable": "_Bot disabled",
+    "onGlobalEnable": "_Bot globally enabled_",
+    "onGlobalDisable": "_Bot globally disabled_",
+    "onSuccessfully": "_Successfully changed_",
+    "onMaxCharsError": "_Value must be integer number between 1 and 5000_",
+    "onMaxLinesError": "_Value must be integer number between 1 and 100_",
+    "onAccessError": "_Operation not permitted_",
+    "onTimeoutError": "_Value must be greater than 0_",
+    "onMaxTasksPerUserError": "_Value must be integer number greater than 0_"
 }
