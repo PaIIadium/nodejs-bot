@@ -54,8 +54,8 @@ function onEnable(msg, groupSettings, bot, defaultSettings) {
 
 function onDisable(msg, groupSettings, bot, defaultSettings) {
   const optionsMsg = setOptMsg(msg);
-  const chatMember = bot.getChatMember(msg.chat.id, msg.from.id);
-  if (chatMember === 'creator' || chatMember === 'administrator') {
+  const status = bot.getChatMember(msg.chat.id, msg.from.id).status;
+  if (status === 'creator' || status === 'administrator') {
     changeSet('group', groupSettings, 'status', false, defaultSettings, msg.chat.id);
     sendMessage(msg.chat.id, answers.onEnable, optionsMsg);
   }
