@@ -58,26 +58,26 @@ const queue = {
           this.arr.push([msg, timeout, maxChars, maxLines]);
           onNode(msg, this, timeout, maxChars, maxLines);
         }
-      } else if (command === '/globalDisable') {
+      } else if (command === '/globaldisable') {
         onGlobalDisable(msg, defaultSettings);
       } else if (command === '/start') {
         onStart(msg);
-      } else if (command === '/maxChars') {
+      } else if (command === '/maxchars') {
         if (msg.chat.type === 'private') onMaxCharsUser(msg, userSettings, defaultSettings);
         else onMaxCharsGroup(msg, groupSettings, defaultSettings, bot);
-      } else if (command === '/maxLines') {
+      } else if (command === '/maxlines') {
         if (msg.chat.type === 'private') onMaxLinesUser(msg, userSettings, defaultSettings);
         else onMaxLinesGroup(msg, groupSettings, defaultSettings);
       } else if (command === '/disable' && msg.chat.type !== 'private') {
         onDisable(msg, groupSettings, bot, defaultSettings);
       } else if (command === '/timeout') {
         onTimeout(msg, defaultSettings);
-      } else if (command === '/maxTasksPerUser') {
+      } else if (command === '/maxtasksperuser') {
         onMaxTasksPerUser(msg, defaultSettings, this);
       }
     } else if (status === 'locally disabled' && command === '/enable') {
       onEnable(msg, groupSettings, bot, defaultSettings);
-    } else if (status === 'globally disabled' && command === '/globalEnable') {
+    } else if (status === 'globally disabled' && command === '/globalenable') {
       onGlobalEnable(msg, defaultSettings);
     }
   },
