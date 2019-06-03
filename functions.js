@@ -55,7 +55,7 @@ const parser = (str, def) => {
 };
 
 const findSettings = (chatType, chatId, groupSettings, userSettings) => { //rewrite
-  if (chatType === ('group' || 'supergroup')) {
+  if (chatType === 'group' || chatType === 'supergroup') {
     const settings = groupSettings.get(chatId);
     if (settings) {
       return settings;
