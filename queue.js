@@ -34,9 +34,9 @@ const queue = {
   inQueue(msg) {
     const optionsMsg = setOptMsg(msg);
     const command = parse(msg);
-    const status = checkStatus(msg, globalSettings[1], groupSettings[2]);
+    const sets = findSettings(msg.chat.type, msg.chat.id, groupSettings, userSettings);
+    const status = checkStatus(msg, globalSettings[1], sets[2]);
     if (command === '/status') {
-      const sets = findSettings(msg.chat.type, msg.chat.id, groupSettings, userSettings);
       onStatus(msg, status, sets[0], sets[1], globalSettings[0], globalSettings[2]);
     }
     if (status === 'enabled') {
