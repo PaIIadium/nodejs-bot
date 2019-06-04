@@ -21,7 +21,6 @@ const queue = {
   maxTasksPerUser: globalSettings[2],
   arr: [],
   search(id) {
-    console.log(this.maxTasksPerUser);
     const ind = [];
     for (let i = 0; i < this.arr.length; i++) {
       if (this.arr[i][0].from.id === id) {
@@ -42,7 +41,6 @@ const queue = {
     if (status === 'enabled') {
       if (command === '/node') {
         const sets = findSettings(msg.chat.type, msg.chat.id, groupSettings, userSettings);
-        console.log(sets);
         const timeout = globalSettings[0];
         const maxChars = sets[0];
         const maxLines = sets[1];

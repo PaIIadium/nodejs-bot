@@ -1,6 +1,8 @@
 'use strict';
 
 const bot = require('./bot');
+const fs = require('fs');
+const adminId = +fs.readFileSync('./admins_id', 'utf8').trim();
 
 function escapeShellArg(match) {
   const reg = /\/\//;
@@ -10,7 +12,7 @@ function escapeShellArg(match) {
 
 const findHandle = msg => msg.text.match(/\/[^ \n]+/)[0];
 
-const inMono = string => '\`\`\`\n' + string + '\`\`\`';
+const inMono = string => '\`' + string + '\`';
 
 const formFlood = (lines, maxChars, maxLines) => {
   let count = 0;
@@ -140,4 +142,11 @@ const changeSet = (type, data, param, value, defSets, id) => {
   }
 };
 
-module.exports = { findHandle, escapeShellArg, sendMessage, checkStdout, inMono, formFlood, setOptMsg, parser, findSettings, checkStatus, changeSet };
+async function isAdmin(bot, msg) {
+  if (msg.from.id === adminId) return true;
+  const status = (await bot.getChatMember(msg.chat.id, msg.from.id)).status;
+  if (status === 'creator' || status === 'administrator') return true;
+  else return false;
+}
+
+module.exports = { findHandle, escapeShellArg, sendMessage, checkStdout, inMono, formFlood, setOptMsg, parser, findSettings, checkStatus, changeSet, isAdmin };

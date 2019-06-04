@@ -2,7 +2,7 @@
 
 const { exec } = require('child_process');
 const fs = require('fs');
-const { findHandle, escapeShellArg, sendMessage, checkStdout, inMono, formFlood, setOptMsg, changeSet } = require('./functions');
+const { findHandle, escapeShellArg, sendMessage, checkStdout, inMono, formFlood, setOptMsg, changeSet, isAdmin } = require('./functions');
 const answers = JSON.parse(fs.readFileSync('./answers.json'));
 const adminId = +fs.readFileSync('./admins_id', 'utf8').trim();
 
@@ -13,7 +13,7 @@ function onNode(msg, queue, timeout, maxChars, maxLines) {
   const chatId = msg.chat.id;
   console.log('@' + msg.from.username + ':' + match);
   const code = escapeShellArg(match);
-  exec(`echo ${code} | su nodeuser -c 'timeout ${timeout}s node'`, (error, stdout, stderr) => {
+  exec(`echo ${code} | su nodeuser - c 'timeout ${timeout}s node'`, (error, stdout, stderr) => {
     if (error && error.code) {
       if (error.code === 124) {
         sendMessage(chatId, answers.onTimeout, optionsMsg);
@@ -43,32 +43,32 @@ function onStart(msg) {
   sendMessage(msg.chat.id, answers.onStart, optionsMsg);
 }
 
-function onEnable(msg, groupSettings, bot, defaultSettings) {
+async function onEnable(msg, groupSettings, bot, defaultSettings) {
   const optionsMsg = setOptMsg(msg);
-  const chatMember = bot.getChatMember(msg.chat.id, msg.from.id);
-  if (chatMember === 'creator' || chatMember === 'administrator') {
+  const status = await isAdmin(bot, msg);
+  if (status) {
     changeSet('group', groupSettings, 'status', true, defaultSettings, msg.chat.id);
     sendMessage(msg.chat.id, answers.onEnable, optionsMsg);
-  }
+  } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
 }
 
-function onDisable(msg, groupSettings, bot, defaultSettings) {
+async function onDisable(msg, groupSettings, bot, defaultSettings) {
   const optionsMsg = setOptMsg(msg);
-  const status = bot.getChatMember(msg.chat.id, msg.from.id).status;
-  if (status === 'creator' || status === 'administrator') {
+  const status = await isAdmin(bot, msg);
+  if (status) {
     changeSet('group', groupSettings, 'status', false, defaultSettings, msg.chat.id);
-    sendMessage(msg.chat.id, answers.onEnable, optionsMsg);
-  }
+    sendMessage(msg.chat.id, answers.onDisable, optionsMsg);
+  } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
 }
 
 function onStatus(msg, status, maxChars, maxLines, timeout, maxInQueue) {
   const optionsMsg = setOptMsg(msg);
   sendMessage(msg.chat.id, `
-Current status: _${status.toUpperCase()}_
-Max characters: _${maxChars}_
-Max lines: _${maxLines}_
-Time limit: _${timeout} seconds_
-Max tasks per user: _${maxInQueue}_`,
+Current status: \`${status.toUpperCase()}\`
+Max characters: \`${maxChars}\`
+Max lines: \`${maxLines}\`
+Time limit: \`${timeout} seconds\`
+Max tasks per user: \`${maxInQueue}\``,
   optionsMsg);
 }
 
@@ -88,12 +88,12 @@ function onGlobalDisable(msg, defaultSettings) {
   } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
 }
 
-function onMaxCharsGroup(msg, groupSettings, defaultSettings, bot) {
+async function onMaxCharsGroup(msg, groupSettings, defaultSettings, bot) {
   const optionsMsg = setOptMsg(msg);
   const handle = findHandle(msg);
   const match = +msg.text.slice(handle.length);
-  const chatMember = bot.getChatMember(msg.chat.id, msg.from.id);
-  if (chatMember === 'creator' || chatMember === 'administrator') {
+  const status = await isAdmin(bot, msg);
+  if (status) {
     if (match % 1 === 0 && match > 0 && match < 5001) {
       changeSet('group', groupSettings, 'maxChars', match, defaultSettings, msg.chat.id);
       sendMessage(msg.chat.id, answers.onSuccessfully, optionsMsg);
@@ -111,12 +111,12 @@ function onMaxCharsUser(msg, userSettings, defaultSettings) {
   } else sendMessage(msg.chat.id, answers.onMaxCharsError, optionsMsg);
 }
 
-function onMaxLinesGroup(msg, groupSettings, defaultSettings, bot) {
+async function onMaxLinesGroup(msg, groupSettings, defaultSettings, bot) {
   const optionsMsg = setOptMsg(msg);
   const handle = findHandle(msg);
   const match = +msg.text.slice(handle.length);
-  const chatMember = bot.getChatMember(msg.chat.id, msg.from.id);
-  if (chatMember === 'creator' || chatMember === 'administrator') {
+  const status = await isAdmin(bot, msg);
+  if (status) {
     if (match % 1 === 0 && match > 0 && match < 101) {
       changeSet('group', groupSettings, 'maxLines', match, defaultSettings, msg.chat.id);
       sendMessage(msg.chat.id, answers.onSuccessfully, optionsMsg);

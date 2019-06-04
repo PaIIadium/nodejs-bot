@@ -6,7 +6,7 @@
     "onInQueueBefore": "_You are still in the queue. Before you: ",
     "onInQueueAfter": "_",
     "onEnable": "_Bot enabled_",
-    "onDisable": "_Bot disabled",
+    "onDisable": "_Bot disabled_",
     "onGlobalEnable": "_Bot globally enabled_",
     "onGlobalDisable": "_Bot globally disabled_",
     "onSuccessfully": "_Successfully changed_",
