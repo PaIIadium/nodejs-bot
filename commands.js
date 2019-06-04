@@ -13,7 +13,7 @@ function onNode(msg, queue, timeout, maxChars, maxLines) {
   const chatId = msg.chat.id;
   console.log('@' + msg.from.username + ':' + match);
   const code = escapeShellArg(match);
-  exec(`echo ${code} | su nodeuser - c 'timeout ${timeout}s node'`, (error, stdout, stderr) => {
+  exec(`echo ${code} | su nodeuser -c 'timeout ${timeout}s node'`, (error, stdout, stderr) => {
     if (error && error.code) {
       if (error.code === 124) {
         sendMessage(chatId, answers.onTimeout, optionsMsg);
