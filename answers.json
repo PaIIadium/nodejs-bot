@@ -14,5 +14,7 @@
     "onMaxLinesError": "_Value must be integer number between 1 and 100_",
     "onAccessError": "_Operation not permitted_",
     "onTimeoutError": "_Value must be greater than 0_",
-    "onMaxTasksPerUserError": "_Value must be integer number greater than 0_"
+    "onMaxTasksPerUserError": "_Value must be integer number greater than 0_",
+    "onUpdateUser": "_UserFile updated_",
+    "onUpdateGroup": "_GroupFile updated_"
 }

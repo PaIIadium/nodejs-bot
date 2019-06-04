@@ -3,7 +3,7 @@
 const fs = require('fs');
 const answers = JSON.parse(fs.readFileSync('./answers.json'));
 const { sendMessage, checkStatus, findSettings, setOptMsg } = require('./functions');
-const { onNode, onStart, onStatus, onEnable, onGlobalEnable, onGlobalDisable, onMaxCharsUser, onMaxLinesUser, onDisable, onMaxCharsGroup, onMaxLinesGroup, onTimeout, onMaxTasksPerUser } = require('./commands');
+const { onNode, onStart, onStatus, onEnable, onGlobalEnable, onGlobalDisable, onMaxCharsUser, onMaxLinesUser, onDisable, onMaxCharsGroup, onMaxLinesGroup, onTimeout, onMaxTasksPerUser, onUpdate } = require('./commands');
 const { defaultSettings, groupSettings, userSettings } = require('./collections');
 const bot = require('./bot');
 
@@ -37,6 +37,9 @@ const queue = {
     const status = checkStatus(msg, globalSettings[1], sets[2]);
     if (command === '/status') {
       onStatus(msg, status, sets[0], sets[1], globalSettings[0], globalSettings[2]);
+    }
+    if (command === '/update') {
+      onUpdate(msg, userSettings, groupSettings);
     }
     if (status === 'enabled') {
       if (command === '/node') {

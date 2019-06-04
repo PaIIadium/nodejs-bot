@@ -48,10 +48,15 @@ const setOptMsg = msg => ({
 const parser = (str, def) => {
   const res = new Map();
   res.set(0, def);
-  const lines = str.split('\n');
-  for (const line of lines) {
-    const arr = line.split(',');
-    res.set(arr[0], arr.slice(1, -1));
+  if (str) {
+    const lines = str.split('\n');
+    for (const line of lines) {
+      const arr = line.split(',');
+      for (const key in arr) {
+        arr[key] = +arr[key]
+      }
+      res.set(arr[0], arr.slice(1, -1));
+    }
   }
   return res;
 };
@@ -149,4 +154,18 @@ async function isAdmin(bot, msg) {
   else return false;
 }
 
-module.exports = { findHandle, escapeShellArg, sendMessage, checkStdout, inMono, formFlood, setOptMsg, parser, findSettings, checkStatus, changeSet, isAdmin };
+function unparser(map) {
+  let res = '';
+  const keys = map.keys();
+  for (const id of keys) {
+    res += id + ',';
+    const data = map.get(id);
+    for (const value of data) {
+      res += value + ',';
+    }
+    res += '\n';
+  }
+  return res;
+}
+
+module.exports = { findHandle, escapeShellArg, sendMessage, checkStdout, inMono, formFlood, setOptMsg, parser, findSettings, checkStatus, changeSet, isAdmin, unparser };

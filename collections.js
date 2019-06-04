@@ -9,6 +9,7 @@ const userFile = fs.readFileSync('./user_settings.csv', 'utf8');
 const groupSettings = parser(groupFile, defaultSettings.group);
 const userSettings = parser(userFile, defaultSettings.user);
 
+console.log(groupSettings, userSettings);
 module.exports = { groupSettings, userSettings, defaultSettings };
 
 

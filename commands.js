@@ -2,7 +2,7 @@
 
 const { exec } = require('child_process');
 const fs = require('fs');
-const { findHandle, escapeShellArg, sendMessage, checkStdout, inMono, formFlood, setOptMsg, changeSet, isAdmin } = require('./functions');
+const { findHandle, escapeShellArg, sendMessage, checkStdout, inMono, formFlood, setOptMsg, changeSet, isAdmin, unparser } = require('./functions');
 const answers = JSON.parse(fs.readFileSync('./answers.json'));
 const adminId = +fs.readFileSync('./admins_id', 'utf8').trim();
 
@@ -47,7 +47,7 @@ async function onEnable(msg, groupSettings, bot, defaultSettings) {
   const optionsMsg = setOptMsg(msg);
   const status = await isAdmin(bot, msg);
   if (status) {
-    changeSet('group', groupSettings, 'status', true, defaultSettings, msg.chat.id);
+    changeSet('group', groupSettings, 'status', 1, defaultSettings, msg.chat.id);
     sendMessage(msg.chat.id, answers.onEnable, optionsMsg);
   } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
 }
@@ -56,7 +56,7 @@ async function onDisable(msg, groupSettings, bot, defaultSettings) {
   const optionsMsg = setOptMsg(msg);
   const status = await isAdmin(bot, msg);
   if (status) {
-    changeSet('group', groupSettings, 'status', false, defaultSettings, msg.chat.id);
+    changeSet('group', groupSettings, 'status', 0, defaultSettings, msg.chat.id);
     sendMessage(msg.chat.id, answers.onDisable, optionsMsg);
   } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
 }
@@ -75,7 +75,7 @@ Max tasks per user: \`${maxInQueue}\``,
 function onGlobalEnable(msg, defaultSettings) {
   const optionsMsg = setOptMsg(msg);
   if (msg.from.id === adminId) {
-    changeSet('global', defaultSettings, 'status', true);
+    changeSet('global', defaultSettings, 'status', 1);
     sendMessage(msg.chat.id, answers.onGlobalEnable, optionsMsg);
   } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
 }
@@ -83,7 +83,7 @@ function onGlobalEnable(msg, defaultSettings) {
 function onGlobalDisable(msg, defaultSettings) {
   const optionsMsg = setOptMsg(msg);
   if (msg.from.id === adminId) {
-    changeSet('global', defaultSettings, 'status', false);
+    changeSet('global', defaultSettings, 'status', 0);
     sendMessage(msg.chat.id, answers.onGlobalDisable, optionsMsg);
   } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
 }
@@ -159,4 +159,18 @@ function onMaxTasksPerUser(msg, defaultSettings, queue) {
   } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
 }
 
-module.exports = { onNode, onStart, onEnable, onStatus, onGlobalEnable, onGlobalDisable, onMaxCharsUser, onMaxLinesUser, onDisable, onMaxCharsGroup, onMaxLinesGroup, onTimeout, onMaxTasksPerUser };
+function onUpdate(msg, userSettings, groupSettings) {
+  const optionsMsg = setOptMsg(msg);
+  if (msg.from.id === adminId) {
+    const user = unparser(userSettings);
+    const group = unparser(groupSettings);
+    console.log('User', userSettings);
+    console.log('Group', groupSettings);
+    fs.writeFile('./user_settings.csv', user, () => 
+    sendMessage(msg.chat.id, answers.onUpdateUser, optionsMsg));
+    fs.writeFile('./group_settings.csv', group, () => 
+    sendMessage(msg.chat.id, answers.onUpdateGroup, optionsMsg));
+  }
+}
+
+module.exports = { onNode, onStart, onEnable, onStatus, onGlobalEnable, onGlobalDisable, onMaxCharsUser, onMaxLinesUser, onDisable, onMaxCharsGroup, onMaxLinesGroup, onTimeout, onMaxTasksPerUser, onUpdate };
