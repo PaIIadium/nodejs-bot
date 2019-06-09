@@ -3,14 +3,14 @@
 const { exec } = require('child_process');
 const fs = require('fs');
 const {
-  getHdl, 
-  escShellArg, 
-  sendMsg, 
-  checkStdout, 
-  inMono, 
-  formFlood, 
-  setOptMsg,  
-  isAdmin, 
+  getHdl,
+  escShellArg,
+  sendMsg,
+  checkStdout,
+  inMono,
+  formFlood,
+  setOptMsg,
+  isAdmin,
   buildCSV,
   change
 } = require('./functions');
