@@ -5,11 +5,11 @@ Sends standard output or error streams as result. The bot has a limit on the exe
 
 # How does it work?
 
-To implement the bot, the node-telegram-bot-api library was used. The bot instance is subscribed to the "text" event. The received message is sent to the inQueue [queue](https://github.com/PaIIadium/nodejs-bot/blob/master/queue.js) method. Depending on the commands, different functions are executed from the [commands.js](https://github.com/PaIIadium/nodejs-bot/blob/master/commands.js) file.
+To implement the bot, the node-telegram-bot-api library was used. The bot instance is subscribed to the "text" event. The received message is sent to the inQueue [handler](https://github.com/PaIIadium/nodejs-bot/blob/master/handler.js) method. Depending on the commands, different functions are executed from the [commands.js](https://github.com/PaIIadium/nodejs-bot/blob/master/commands.js) file.
 
 # Where are the bot settings stored?
 
-To store user and group settings, [user_settings.csv](https://github.com/PaIIadium/nodejs-bot/blob/master/user_settings.csv) and [group_settings.csv](https://github.com/PaIIadium/nodejs-bot/blob/master/group_settings.csv) files are used. When the bot starts, these files are parsed and the settings are written to the Map dictionaries ([collections.js](https://github.com/PaIIadium/nodejs-bot/blob/master/collections.js)). When editing settings, the Map changes, and before shutting down the bot, use the **/update** command to overwrite the corresponding files.
+To store user and group settings, [user_settings.csv](https://github.com/PaIIadium/nodejs-bot/blob/master/data/user_settings.csv) and [group_settings.csv](https://github.com/PaIIadium/nodejs-bot/blob/master/data/group_settings.csv) files are used. When the bot starts, these files are parsed and the settings are written to the Map dictionaries ([collections.js](https://github.com/PaIIadium/nodejs-bot/blob/master/collections.js)). When editing settings, the Map changes, and before shutting down the bot, use the **/update** command to overwrite the corresponding files.
 
 # How security of code execution is achieved?
 To eliminate the possibility of user interaction with the file system and server-side processes, a separate process running from another user is used to execute the code:
