@@ -10,11 +10,12 @@
     "onGlobalEnable": "_Bot globally enabled_",
     "onGlobalDisable": "_Bot globally disabled_",
     "onSuccessfully": "_Successfully changed_",
-    "onMaxCharsError": "_Value must be integer number between 1 and 5000_",
-    "onMaxLinesError": "_Value must be integer number between 1 and 100_",
+    "onMaxCharsError": "_Value must be integer number between 1 and 4000_",
+    "onMaxLinesError": "_Value must be integer number between 1 and 200_",
     "onAccessError": "_Operation not permitted_",
-    "onTimeoutError": "_Value must be greater than 0_",
-    "onMaxTasksPerUserError": "_Value must be integer number greater than 0_",
-    "onUpdateUser": "_UserFile updated_",
-    "onUpdateGroup": "_GroupFile updated_"
+    "onTimeoutError": "_Value must be 0.1 or greater_",
+    "onMaxTPUError": "_Value must be integer number greater than 0_",
+    "onUpUser": "_UserFile updated_",
+    "onUpGroup": "_GroupFile updated_",
+    "onUpGlob": "_GlobalFile updated_"
 }

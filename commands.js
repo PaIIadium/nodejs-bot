@@ -2,175 +2,257 @@
 
 const { exec } = require('child_process');
 const fs = require('fs');
-const { findHandle, escapeShellArg, sendMessage, checkStdout, inMono, formFlood, setOptMsg, changeSet, isAdmin, unparser } = require('./functions');
-const answers = JSON.parse(fs.readFileSync('./answers.json'));
-const adminId = +fs.readFileSync('./admins_id', 'utf8').trim();
+const {
+  getHdl, 
+  escShellArg, 
+  sendMsg, 
+  checkStdout, 
+  inMono, 
+  formFlood, 
+  setOptMsg,  
+  isAdmin, 
+  buildCSV,
+  change
+} = require('./functions');
 
-function onNode(msg, queue, timeout, maxChars, maxLines) {
-  const optionsMsg = setOptMsg(msg);
-  const handle = findHandle(msg);
-  const match = msg.text.slice(handle.length);
-  const chatId = msg.chat.id;
+const ans = JSON.parse(fs.readFileSync('./answers.json'));
+const adminId = parseInt(fs.readFileSync('./data/admin_id', 'utf8'), 10);
+const minChars = 1;
+const maxChars = 4000;
+const minLines = 1;
+const maxLines = 200;
+const minTimeout = 0.1;
+const minTPU = 1;
+const statOn = 1;
+const statOff = 0;
+
+const onNode = (msg, handler, timeout, maxChars, maxLines) => {
+  const optMsg = setOptMsg(msg);
+  const hdl = getHdl(msg);
+  const match = msg.text.slice(hdl.length);
+  const id = msg.chat.id;
   console.log('@' + msg.from.username + ':' + match);
-  const code = escapeShellArg(match);
-  exec(`echo ${code} | su nodeuser -c 'timeout ${timeout}s node'`, (error, stdout, stderr) => {
-    if (error && error.code) {
-      if (error.code === 124) {
-        sendMessage(chatId, answers.onTimeout, optionsMsg);
+  const code = escShellArg(match);
+  const bashCmd = `echo ${code} | su nodeuser -c 'timeout ${timeout}s node'`;
+  const processing = (err, stdout, stderr) => {
+    if (err) {
+      const timeoutCode = 124;
+      if (err.code === timeoutCode) {
+        sendMsg(id, ans.onTimeout, optMsg);
       } else {
-        const a = stderr.split('\n').reverse().filter((_) => (_.indexOf('Error') === -1 ? 0 : 1));
-        sendMessage(chatId, inMono(a[0]), optionsMsg);
+        const filterFn = line => line.indexOf('Error') === -1 ? 0 : 1;
+        const res = stderr.split('\n')
+                          .reverse()
+                          .filter(filterFn);
+        sendMsg(id, inMono(res[0]), optMsg);
       }
     } else {
-      const msgStat = checkStdout(stdout, maxLines, maxChars);
-      if (msgStat[0] === 'empty') {
-        sendMessage(chatId, answers.onEmpty, optionsMsg);
-      } else if (msgStat[0] === 'ok') {
-        const res = inMono(msgStat[1]);
-        sendMessage(chatId, res, optionsMsg);
+      const [stat, msg] = checkStdout(stdout, maxLines, maxChars);
+      if (stat === 'empty') {
+        sendMsg(id, ans.onEmpty, optMsg);
+      } else if (stat === 'ok') {
+        const res = inMono(msg);
+        sendMsg(id, res, optMsg);
       } else {
-        const res = formFlood(msgStat[1], maxChars, maxLines) + answers.onFlood;
-        sendMessage(chatId, res, optionsMsg);
+        const res = inMono(formFlood(msg, maxChars, maxLines)) + ans.onFlood;
+        sendMsg(id, res, optMsg);
       }
     }
-    queue.arr.shift();
-    queue.fromQueue();
-  });
+    handler.queue.shift();
+    handler.fromQueue();
+  }
+  exec(bashCmd, processing);
 }
 
-function onStart(msg) {
-  const optionsMsg = setOptMsg(msg);
-  sendMessage(msg.chat.id, answers.onStart, optionsMsg);
+const onStart = msg => {
+  const optMsg = setOptMsg(msg);
+  sendMsg(msg.chat.id, ans.onStart, optMsg);
 }
 
-async function onEnable(msg, groupSettings, bot, defaultSettings) {
-  const optionsMsg = setOptMsg(msg);
-  const status = await isAdmin(bot, msg);
-  if (status) {
-    changeSet('group', groupSettings, 'status', 1, defaultSettings, msg.chat.id);
-    sendMessage(msg.chat.id, answers.onEnable, optionsMsg);
-  } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
-}
-
-async function onDisable(msg, groupSettings, bot, defaultSettings) {
-  const optionsMsg = setOptMsg(msg);
-  const status = await isAdmin(bot, msg);
-  if (status) {
-    changeSet('group', groupSettings, 'status', 0, defaultSettings, msg.chat.id);
-    sendMessage(msg.chat.id, answers.onDisable, optionsMsg);
-  } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
-}
-
-function onStatus(msg, status, maxChars, maxLines, timeout, maxInQueue) {
-  const optionsMsg = setOptMsg(msg);
-  sendMessage(msg.chat.id, `
-Current status: \`${status.toUpperCase()}\`
-Max characters: \`${maxChars}\`
-Max lines: \`${maxLines}\`
-Time limit: \`${timeout} seconds\`
-Max tasks per user: \`${maxInQueue}\``,
-  optionsMsg);
-}
-
-function onGlobalEnable(msg, defaultSettings) {
-  const optionsMsg = setOptMsg(msg);
-  if (msg.from.id === adminId) {
-    changeSet('global', defaultSettings, 'status', 1);
-    sendMessage(msg.chat.id, answers.onGlobalEnable, optionsMsg);
-  } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
-}
-
-function onGlobalDisable(msg, defaultSettings) {
-  const optionsMsg = setOptMsg(msg);
-  if (msg.from.id === adminId) {
-    changeSet('global', defaultSettings, 'status', 0);
-    sendMessage(msg.chat.id, answers.onGlobalDisable, optionsMsg);
-  } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
-}
-
-async function onMaxCharsGroup(msg, groupSettings, defaultSettings, bot) {
-  const optionsMsg = setOptMsg(msg);
-  const handle = findHandle(msg);
-  const match = +msg.text.slice(handle.length);
-  const status = await isAdmin(bot, msg);
-  if (status) {
-    if (match % 1 === 0 && match > 0 && match < 5001) {
-      changeSet('group', groupSettings, 'maxChars', match, defaultSettings, msg.chat.id);
-      sendMessage(msg.chat.id, answers.onSuccessfully, optionsMsg);
-    } else sendMessage(msg.chat.id, answers.onMaxCharsError, optionsMsg);
-  } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
-}
-
-function onMaxCharsUser(msg, userSettings, defaultSettings) {
-  const optionsMsg = setOptMsg(msg);
-  const handle = findHandle(msg);
-  const match = +msg.text.slice(handle.length);
-  if (match % 1 === 0 && match > 0 && match < 5001) {
-    changeSet('user', userSettings, 'maxChars', match, defaultSettings, msg.chat.id);
-    sendMessage(msg.chat.id, answers.onSuccessfully, optionsMsg);
-  } else sendMessage(msg.chat.id, answers.onMaxCharsError, optionsMsg);
-}
-
-async function onMaxLinesGroup(msg, groupSettings, defaultSettings, bot) {
-  const optionsMsg = setOptMsg(msg);
-  const handle = findHandle(msg);
-  const match = +msg.text.slice(handle.length);
-  const status = await isAdmin(bot, msg);
-  if (status) {
-    if (match % 1 === 0 && match > 0 && match < 101) {
-      changeSet('group', groupSettings, 'maxLines', match, defaultSettings, msg.chat.id);
-      sendMessage(msg.chat.id, answers.onSuccessfully, optionsMsg);
-    } else sendMessage(msg.chat.id, answers.onMaxLinesError, optionsMsg);
-  } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
-}
-
-function onMaxLinesUser(msg, userSettings, defaultSettings) {
-  const optionsMsg = setOptMsg(msg);
-  const handle = findHandle(msg);
-  const match = +msg.text.slice(handle.length);
-  if (match % 1 === 0 && match > 0 && match < 101) {
-    changeSet('user', userSettings, 'maxLines', match, defaultSettings, msg.chat.id);
-    sendMessage(msg.chat.id, answers.onSuccessfully, optionsMsg);
-  } else sendMessage(msg.chat.id, answers.onMaxLinesError, optionsMsg);
-}
-
-function onTimeout(msg, defaultSettings) {
-  const optionsMsg = setOptMsg(msg);
-  const handle = findHandle(msg);
-  const match = +msg.text.slice(handle.length);
-  if (msg.from.id === adminId) {
-    if (match > 0) {
-      changeSet('global', defaultSettings, 'timeout', match);
-      sendMessage(msg.chat.id, answers.onSuccessfully, optionsMsg);
-    } else sendMessage(msg.chat.id, answers.onTimeoutError, optionsMsg);
-  } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
-}
-
-function onMaxTasksPerUser(msg, defaultSettings, queue) {
-  const optionsMsg = setOptMsg(msg);
-  const handle = findHandle(msg);
-  const match = +msg.text.slice(handle.length);
-  if (msg.from.id === adminId) {
-    if (match % 1 === 0 && match > 0) {
-      changeSet('global', defaultSettings, 'maxTasksPerUser', match);
-      queue.maxTasksPerUser = match;
-      sendMessage(msg.chat.id, answers.onSuccessfully, optionsMsg);
-    } else sendMessage(msg.chat.id, answers.onMaxTasksPerUserError, optionsMsg);
-  } else sendMessage(msg.chat.id, answers.onAccessError, optionsMsg);
-}
-
-function onUpdate(msg, userSettings, groupSettings) {
-  const optionsMsg = setOptMsg(msg);
-  if (msg.from.id === adminId) {
-    const user = unparser(userSettings);
-    const group = unparser(groupSettings);
-    console.log('User', userSettings);
-    console.log('Group', groupSettings);
-    fs.writeFile('./user_settings.csv', user, () => 
-    sendMessage(msg.chat.id, answers.onUpdateUser, optionsMsg));
-    fs.writeFile('./group_settings.csv', group, () => 
-    sendMessage(msg.chat.id, answers.onUpdateGroup, optionsMsg));
+const onEnable = async (msg, groupSets, localSets, bot) => {
+  const optMsg = setOptMsg(msg);
+  const access = await isAdmin(bot, msg);
+  if (access) {
+    const changeStat = change('stat');
+    changeStat(msg.chat.id, groupSets, localSets, statOn);
+    sendMsg(msg.chat.id, ans.onEnable, optMsg);
+  } else {
+    sendMsg(msg.chat.id, ans.onAccessError, optMsg);
   }
 }
 
-module.exports = { onNode, onStart, onEnable, onStatus, onGlobalEnable, onGlobalDisable, onMaxCharsUser, onMaxLinesUser, onDisable, onMaxCharsGroup, onMaxLinesGroup, onTimeout, onMaxTasksPerUser, onUpdate };
+const onDisable = async (msg, groupSets, localSets, bot) => {
+  const optMsg = setOptMsg(msg);
+  const access = await isAdmin(bot, msg);
+  if (access) {
+    const changeStat = change('stat');
+    changeStat(msg.chat.id, groupSets, localSets, statOff);
+    sendMsg(msg.chat.id, ans.onDisable, optMsg);
+  } else {
+    sendMsg(msg.chat.id, ans.onAccessError, optMsg);
+  }
+}
+
+const onStatus = (msg, localSets, params, stat) => {
+  const idChat = msg.chat.id;
+  const [maxChars, maxLines] = localSets;
+  const [timeout, maxTPU] = params;
+  const optMsg = setOptMsg(msg);
+  sendMsg(idChat, `
+Current status: \`${stat.toUpperCase()}\`
+Max characters: \`${maxChars}\`
+Max lines: \`${maxLines}\`
+Time limit: \`${timeout} seconds\`
+Max tasks per user: \`${maxTPU}\``,
+  optMsg);
+}
+
+const onGlobalEnable = (msg, globSets, params) => {
+  const optMsg = setOptMsg(msg);
+  if (msg.from.id === adminId) {
+    const changeStat = change('stat');
+    changeStat(0, globSets, params, statOn);
+    sendMsg(msg.chat.id, ans.onGlobalEnable, optMsg);
+  } else {
+    sendMsg(msg.chat.id, ans.onAccessError, optMsg);
+  }
+}
+
+const onGlobalDisable = (msg, globSets, params) => {
+  const optMsg = setOptMsg(msg);
+  if (msg.from.id === adminId) {
+    const changeStat = change('stat');
+    changeStat(0, globSets, params, statOff);
+    sendMsg(msg.chat.id, ans.onGlobalDisable, optMsg);
+  } else {
+    sendMsg(msg.chat.id, ans.onAccessError, optMsg);
+  }
+}
+
+const onMaxCharsGroup = async (msg, groupSets, localSets, bot) => {
+  const optMsg = setOptMsg(msg);
+  const hdl = getHdl(msg);
+  const match = parseInt(msg.text.slice(hdl.length), 10);
+  const access = await isAdmin(bot, msg);
+  if (access) {
+    if (match >= minChars && match <= maxChars) {
+      const changeMaxChars = change('maxChars');
+      changeMaxChars(msg.chat.id, groupSets, localSets, match);
+      sendMsg(msg.chat.id, ans.onSuccessfully, optMsg);
+    } else {
+      sendMsg(msg.chat.id, ans.onMaxCharsError, optMsg);
+    }
+  } else {
+    sendMsg(msg.chat.id, ans.onAccessError, optMsg);
+  }
+}
+
+const onMaxCharsUser = (msg, userSets, localSets) => {
+  const optMsg = setOptMsg(msg);
+  const hdl = getHdl(msg);
+  const match = parseInt(msg.text.slice(hdl.length), 10);
+  if (match >= minChars && match <= maxChars) {
+    const changeMaxChars = change('maxChars');
+    changeMaxChars(msg.chat.id, userSets, localSets, match);
+    sendMsg(msg.chat.id, ans.onSuccessfully, optMsg);
+  } else {
+    sendMsg(msg.chat.id, ans.onMaxCharsError, optMsg);
+  }
+}
+
+const onMaxLinesGroup = async (msg, groupSets, localSets, bot) => {
+  const optMsg = setOptMsg(msg);
+  const hdl = getHdl(msg);
+  const match = parseInt(msg.text.slice(hdl.length), 10);
+  const access = await isAdmin(bot, msg);
+  if (access) {
+    if (match >= minLines && match <= maxLines) {
+      const changeMaxLines = change('maxLines');
+      changeMaxLines(msg.chat.id, groupSets, localSets, match);
+      sendMsg(msg.chat.id, ans.onSuccessfully, optMsg);
+    } else {
+      sendMsg(msg.chat.id, ans.onMaxLinesError, optMsg);
+    }
+  } else {
+    sendMsg(msg.chat.id, ans.onAccessError, optMsg);
+  }
+}
+
+const onMaxLinesUser = (msg, userSets, localSets) => {
+  const optMsg = setOptMsg(msg);
+  const hdl = getHdl(msg);
+  const match = parseInt(msg.text.slice(hdl.length), 10);
+  if (match >= minLines && match <= maxLines) {
+    const changeMaxLines = change('maxLines');
+    changeMaxLines(msg.chat.id, userSets, localSets, match);
+    sendMsg(msg.chat.id, ans.onSuccessfully, optMsg);
+  } else {
+    sendMsg(msg.chat.id, ans.onMaxLinesError, optMsg);
+  }
+}
+
+const onTimeout = (msg, globSets, params) => {
+  const optMsg = setOptMsg(msg);
+  const hdl = getHdl(msg);
+  const match = parseFloat(msg.text.slice(hdl.length));
+  if (msg.from.id === adminId) {
+    if (match >= minTimeout) {
+      const changeTimeout = change('timeout');
+      changeTimeout(0, globSets, params, match);
+      sendMsg(msg.chat.id, ans.onSuccessfully, optMsg);
+    } else {
+      sendMsg(msg.chat.id, ans.onTimeoutError, optMsg);
+    }
+  } else {
+    sendMsg(msg.chat.id, ans.onAccessError, optMsg);
+  }
+}
+
+const onMaxTPU = (msg, globSets, params) => {
+  const optMsg = setOptMsg(msg);
+  const hdl = getHdl(msg);
+  const match = parseInt(msg.text.slice(hdl.length), 10);
+  if (msg.from.id === adminId) {
+    if (match >= minTPU) {
+      const changeMaxTPU = change('maxTPU');
+      changeMaxTPU(0, globSets, params, match);
+      sendMsg(msg.chat.id, ans.onSuccessfully, optMsg);
+    } else {
+      sendMsg(msg.chat.id, ans.onMaxTPUError, optMsg);
+    }
+  } else {
+    sendMsg(msg.chat.id, ans.onAccessError, optMsg);
+  }
+}
+
+const onUpdate = (msg, userSets, groupSets, globSets) => {
+  if (msg.from.id === adminId) {
+    const optMsg = setOptMsg(msg);
+    const user = buildCSV(userSets, 'id,maxChars,maxLines');
+    const group = buildCSV(groupSets, 'id,maxChars,maxLines,stat');
+    const global = buildCSV(globSets, 'id,timeout,maxTPU,stat');
+    const ansUpUser = () => sendMsg(msg.chat.id, ans.onUpUser, optMsg);
+    const ansUpGroup = () => sendMsg(msg.chat.id, ans.onUpGroup, optMsg);
+    const ansUpGlob = () => sendMsg(msg.chat.id, ans.onUpGlob, optMsg);
+    fs.writeFile('./data/user_settings.csv', user, ansUpUser);
+    fs.writeFile('./data/group_settings.csv', group, ansUpGroup);
+    fs.writeFile('./data/global_settings.csv', global, ansUpGlob);
+  }
+}
+
+module.exports = { 
+  onNode, 
+  onStart, 
+  onEnable, 
+  onStatus, 
+  onGlobalEnable, 
+  onGlobalDisable, 
+  onMaxCharsUser, 
+  onMaxLinesUser,
+  onDisable, 
+  onMaxCharsGroup, 
+  onMaxLinesGroup, 
+  onTimeout, 
+  onMaxTPU, 
+  onUpdate 
+};

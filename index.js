@@ -3,6 +3,6 @@
 process.env['NTBA_FIX_319'] = 1;
 
 const bot = require('./bot');
-const queue = require('./queue');
+const handler = require('./handler');
 
-bot.on('text', queue.inQueue.bind(queue));
+bot.on('text', handler.onMessage.bind(handler));

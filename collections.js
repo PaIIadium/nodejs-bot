@@ -1,16 +1,14 @@
 'use strict';
 
 const fs = require('fs');
-const defaultSettings = JSON.parse(fs.readFileSync('./default_settings.json'));
-const { parser } = require('./functions');
-const groupFile = fs.readFileSync('./group_settings.csv', 'utf8');
-const userFile = fs.readFileSync('./user_settings.csv', 'utf8');
+const defSets = JSON.parse(fs.readFileSync('./data/def_settings.json'));
+const { buildMap } = require('./functions');
+const groupFile = fs.readFileSync('./data/group_settings.csv', 'utf8');
+const userFile = fs.readFileSync('./data/user_settings.csv', 'utf8');
+const globalFile = fs.readFileSync('./data/global_settings.csv', 'utf8');
 
-const groupSettings = parser(groupFile, defaultSettings.group);
-const userSettings = parser(userFile, defaultSettings.user);
+const groupSets = buildMap(groupFile, defSets.group);
+const userSets = buildMap(userFile, defSets.user);
+const globSets = buildMap(globalFile, defSets.global);
 
-console.log(groupSettings, userSettings);
-module.exports = { groupSettings, userSettings, defaultSettings };
-
-
-
+module.exports = { groupSets, userSets, globSets };

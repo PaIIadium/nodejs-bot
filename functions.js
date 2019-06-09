@@ -2,170 +2,154 @@
 
 const bot = require('./bot');
 const fs = require('fs');
-const adminId = +fs.readFileSync('./admins_id', 'utf8').trim();
+const adminId = parseInt(fs.readFileSync('./data/admin_id', 'utf8'), 10);
 
-function escapeShellArg(match) {
+const escShellArg = match => {
   const reg = /\/\//;
-  const res = match.split('\n').map(el => (el.match(reg) ? el.slice(0, el.indexOf('\/\/')) : el)).join(' ');
+  const res = match.split('\n')
+                   .map(el => (el.match(reg) ? 
+                     el.slice(0, el.indexOf('\/\/')) : 
+                     el)
+                    ).join(' ');
   return `'${res.replace(/'/g, '\'\\\'\'')}'`;
 }
 
-const findHandle = msg => msg.text.match(/\/[^ \n]+/)[0];
+const getHdl = msg => msg.text.match(/\/[^ \n]+/)[0];
 
-const inMono = string => '\`' + string + '\`';
+const inMono = str => '\`' + str + '\`';
 
 const formFlood = (lines, maxChars, maxLines) => {
   let count = 0;
   let res = '';
-  for (const value of lines) {
-    if ((res + value).length - count < maxChars && count < maxLines) {
-      res += value + '\n';
-      count++;
-    } else {
-      if (count < maxLines) res += value.slice(0, maxChars - res.length + count);
-      break;
+  for (const val of lines) {
+    if (count < maxLines) {
+      if ((res + val).length - count < maxChars) {
+        res += val + '\n';
+        count++;
+      } else {
+        const lengthLast = maxChars - res.length + count
+        res += val.slice(0, lengthLast);
+        break;
+      }
     }
   }
-  return inMono(res);
+  return res;
 };
 
 const checkStdout = (stdout, maxLines, maxChars) => {
   const lines = stdout.split('\n');
   const chars = lines.join('');
   if (lines.length <= maxLines && chars.length <= maxChars) {
-    if (chars.length === 0) return ['empty'];
-    else return ['ok', stdout];
-  } else return ['flood', lines];
+    if (chars.length === 0) return ['empty', ''];
+    return ['ok', stdout];
+  }
+  return ['flood', lines];
 };
 
-const sendMessage = bot.sendMessage.bind(bot);
+const sendMsg = bot.sendMessage.bind(bot);
 
 const setOptMsg = msg => ({
   parse_mode: 'Markdown',
   reply_to_message_id: msg.message_id
 });
 
-const parser = (str, def) => {
+const getCmd = msg => {
+  let cmd;
+  const type = msg.entities[0].type;
+  const offset = msg.entities[0].offset;
+  if (type === 'bot_command' && offset === 0) {
+    cmd = msg.text.match(/\/[^ \n@]+/)[0];
+    return cmd;
+  }
+};
+
+const buildMap = (file, defSets) => {
   const res = new Map();
-  res.set(0, def);
-  if (str) {
-    const lines = str.split('\n');
-    for (const line of lines) {
-      const arr = line.split(',');
-      for (const key in arr) {
-        arr[key] = +arr[key]
-      }
-      res.set(arr[0], arr.slice(1, -1));
-    }
+  res.set(0, defSets);
+  const lines = file.split('\n');
+  lines.shift();
+  lines.pop();
+  const dataset = lines.map(line => line.split(',')
+                                        .map(val => +val)
+                            );
+  for (const record of dataset) {
+    const id = record[0];
+    const data = record.slice(1);
+    res.set(id, data);
   }
   return res;
 };
 
-const findSettings = (chatType, chatId, groupSettings, userSettings) => { //rewrite
-  if (chatType === 'group' || chatType === 'supergroup') {
-    const settings = groupSettings.get(chatId);
-    if (settings) {
-      return settings;
-    } else {
-      const def = groupSettings.get(0);
-      return def;
+const getSets = (id, data) => {
+  const sets = data.get(id);
+  if (sets) return sets;
+  const defSets = data.get(0);
+  return defSets;
+};
+
+const checkStatus = (msg, params, localSets) => {
+  const globStat = params[2];
+  if (globStat) {
+    if (msg.chat.type === 'private') {
+      return 'enabled';
     }
-  } else {
-    const settings = userSettings.get(chatId);
-    if (settings) {
-      return settings;
-    } else {
-      const def = userSettings.get(0);
-      return def;
+    const groupStat = localSets[2];
+    if (groupStat) {
+      return 'enabled';
     }
+    return 'locally disabled';
   }
+  return 'globally disabled';
 };
 
-const checkStatus = (msg, globalStatus, groupStatus) => {
-  if (globalStatus) {
-    if (msg.chat.type === 'private') return 'enabled';
-    else if (groupStatus) return 'enabled';
-    else return 'locally disabled';
-  } else return 'globally disabled';
-};
-
-const changeSet = (type, data, param, value, defSets, id) => {
-  if (type === 'user') {
-    const set = data.get(id);
-    if (param === 'maxLines') {
-      if (set) {
-        set[1] = value;
-      } else {
-        const def = [...defSets.user];
-        def[1] = value;
-        data.set(id, def);
-      }
-    } else if (param === 'maxChars') {
-      if (set) {
-        set[0] = value;
-      } else {
-        const def = [...defSets.user];
-        def[0] = value;
-        data.set(id, def);
-      }
-    }
-  } else if (type === 'group') {
-    const set = data.get(id);
-    if (param === 'maxLines') {
-      if (set) {
-        set[1] = value;
-      } else {
-        const def = [...defSets.group];
-        def[1] = value;
-        data.set(id, def);
-      }
-    } else if (param === 'maxChars') {
-      if (set) {
-        set[0] = value;
-      } else {
-        const def = [...defSets.group];
-        def[0] = value;
-        data.set(id, def);
-      }
-    } else if (param === 'status') {
-      if (set) {
-        set[2] = value;
-      } else {
-        const def = [...defSets.group];
-        def[2] = value;
-        data.set(id, def);
-      }
-    }
-  } else if (type === 'global') {
-    if (param === 'maxTasksPerUser') {
-      data.global[2] = value;
-    } else if (param === 'timeout') {
-      data.global[0] = value;
-    } else if (param === 'status') {
-      data.global[1] = value;
-    }
-  }
-};
-
-async function isAdmin(bot, msg) {
-  if (msg.from.id === adminId) return true;
-  const status = (await bot.getChatMember(msg.chat.id, msg.from.id)).status;
-  if (status === 'creator' || status === 'administrator') return true;
-  else return false;
+const conformity = {
+  maxChars: 0,
+  maxLines: 1,
+  stat: 2,
+  timeout: 0,
+  maxTPU: 1 // max tasks per user
 }
 
-function unparser(map) {
-  let res = '';
+const change = prop => (id, data, sets, val) => {
+  const index = conformity[prop];
+  const newSets = [...sets];
+  newSets[index] = val;
+  data.set(id, newSets);
+}
+
+const isAdmin = async (bot, msg) => {
+  if (msg.from.id === adminId) return true;
+  const chatMember = await bot.getChatMember(msg.chat.id, msg.from.id);
+  const post = chatMember.status;
+  if (post === 'creator' || post === 'administrator') return true;
+  return false;
+}
+
+const buildCSV = (map, title) => {
+  let res = title + '\n';
   const keys = map.keys();
   for (const id of keys) {
-    res += id + ',';
-    const data = map.get(id);
-    for (const value of data) {
-      res += value + ',';
-    }
-    res += '\n';
+    const arr = [...map.get(id)];
+    arr.unshift(id);
+    const str = arr.join(',') + '\n';
+    res += str;
   }
   return res;
 }
 
-module.exports = { findHandle, escapeShellArg, sendMessage, checkStdout, inMono, formFlood, setOptMsg, parser, findSettings, checkStatus, changeSet, isAdmin, unparser };
+module.exports = { 
+  getHdl, 
+  escShellArg,
+  sendMsg,
+  checkStdout,
+  inMono,
+  formFlood,
+  setOptMsg,
+  buildMap,
+  getSets,
+  checkStatus,
+  isAdmin,
+  getCmd,
+  buildCSV,
+  change
+};
