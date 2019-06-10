@@ -5,7 +5,7 @@ Sends standard output or error streams as result. The bot has a limit on the exe
 
 # How does it work?
 
-To implement the bot, the node-telegram-bot-api library was used. The bot instance is subscribed to the "text" event. The received message is sent to the inQueue [handler](https://github.com/PaIIadium/nodejs-bot/blob/master/handler.js) method. Depending on the commands, different functions are executed from the [commands.js](https://github.com/PaIIadium/nodejs-bot/blob/master/commands.js) file.
+To implement the bot, the node-telegram-bot-api library was used. The bot instance is subscribed to the "text" event. The received message is sent to the onMessage [handler](https://github.com/PaIIadium/nodejs-bot/blob/master/handler.js) method. Depending on the commands, different functions are executed from the [commands.js](https://github.com/PaIIadium/nodejs-bot/blob/master/commands.js) file.
 
 # Where are the bot settings stored?
 
