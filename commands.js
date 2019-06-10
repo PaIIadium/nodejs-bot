@@ -63,7 +63,7 @@ const cmdList = {
     const code = escShellArg(match);
     const [maxChars, maxLines] = this.localSets;
     const timeout = this.params[0];
-    const bashCmd = `echo ${code} | timeout ${timeout}s node`;
+    const bashCmd = `echo ${code} | su nodeuser -c 'timeout ${timeout}s node'`;
     const processing = (err, stdout, stderr) => {
       if (err) {
         const timeoutCode = 124;
