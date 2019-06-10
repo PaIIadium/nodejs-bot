@@ -19,11 +19,7 @@ const {
   getSets
 } = require('./functions');
 
-const {
-  globSets,
-  groupSets,
-  userSets
-} = require('./collections');
+const { globSets, groupSets, userSets } = require('./collections');
 
 const adminId = parseInt(fs.readFileSync('./data/admin_id', 'utf8'), 10);
 const minChars = 1;
