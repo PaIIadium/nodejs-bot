@@ -120,11 +120,11 @@ const cmdList = {
     const [maxChars, maxLines] = this.localSets;
     const [timeout, maxTPU] = this.params;
     sendMsg(this.idChat, `
-  Current status: \`${this.stat.toUpperCase()}\`
-  Max characters: \`${maxChars}\`
-  Max lines: \`${maxLines}\`
-  Time limit: \`${timeout} seconds\`
-  Max tasks per user: \`${maxTPU}\``,
+Current status: \`${this.stat.toUpperCase()}\`
+Max characters: \`${maxChars}\`
+Max lines: \`${maxLines}\`
+Time limit: \`${timeout} seconds\`
+Max tasks per user: \`${maxTPU}\``,
     this.optMsg);
   },
   '/globalenable': function(msg) {
