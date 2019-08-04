@@ -1,8 +1,12 @@
 'use strict';
 
-const { getCmd, sendMsg, setOptMsg } = require('/root/bot/functions');
-const ans = require('/root/bot/answers.json');
-const { cmdList } = require('/root/bot/commands');
+const {
+  getCmd,
+  sendMsg,
+  setOptMsg
+} = require('/root/bot/nodejs-bot/functions');
+const ans = require('/root/bot/nodejs-bot/answers.json');
+const { cmdList } = require('/root/bot/nodejs-bot/commands');
 
 const handler = {
   queue: [],
