@@ -1,6 +1,6 @@
 'use strict';
 
-const bot = require('/root/bot/bot');
+const bot = require('/root/bot/nodejs-bot/bot');
 const fs = require('fs');
 const adminId = parseInt(fs.readFileSync('/root/bot/nodejs-bot/data/admin_id', 'utf8'), 10);
 
