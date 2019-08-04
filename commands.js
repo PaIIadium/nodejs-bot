@@ -39,8 +39,8 @@ const cmdList = {
     this.params = globSets.get(0);
     this.data = this.type === 'private' ? userSets : groupSets;
     this.localSets = getSets(this.idChat, this.data);
-    this.stat = checkStatus(msg, this.params, this.localSets);
-    return this.stat === 'enabled';
+    const stat = checkStatus(msg, this.params, this.localSets);
+    return stat;
   },
   init(handler, msg, cmd) {
     if (cmd === '/node') {
@@ -52,7 +52,8 @@ const cmdList = {
     }
   },
   '/node': function(msg, handler) {
-    if (!this.isEnable(msg)) return;
+    const stat = this.isEnable(msg);
+    if (stat === 'locally disabled' || stat === 'globally disabled') return;
     const hdl = getHdl(msg);
     const match = msg.text.slice(hdl.length);
     console.log('@' + msg.from.username + ':' + match);
@@ -68,8 +69,8 @@ const cmdList = {
         } else {
           const filterFn = line => line.indexOf('Error') === -1 ? 0 : 1;
           const res = stderr.split('\n')
-                            .reverse()
-                            .filter(filterFn);
+            .reverse()
+            .filter(filterFn);
           sendMsg(this.idChat, inMono(res[0]), this.optMsg);
         }
       } else {
@@ -90,11 +91,13 @@ const cmdList = {
     exec(bashCmd, processing);
   },
   '/start': function(msg) {
-    if (!this.isEnable(msg)) return;
+    const stat = this.isEnable(msg);
+    if (stat === 'locally disabled' || stat === 'globally disabled') return;
     sendMsg(msg.chat.id, ans.onStart, this.optMsg);
   },
   '/enable': async function(msg) {
-    if (this.isEnable(msg) || this.type === 'private') return;
+    const stat = this.isEnable(msg);
+    if (stat === 'enabled' || this.type === 'private') return;
     const access = await isAdmin(bot, msg);
     if (access) {
       const changeStat = change('stat');
@@ -105,7 +108,8 @@ const cmdList = {
     }
   },
   '/disable': async function(msg) {
-    if (!this.isEnable(msg) || this.type === 'private') return;
+    const stat = this.isEnable(msg);
+    if (stat === 'locally disabled' || stat === 'globally disabled') return;
     const access = await isAdmin(bot, msg);
     if (access) {
       const changeStat = change('stat');
@@ -116,11 +120,11 @@ const cmdList = {
     }
   },
   '/status': function(msg) {
-    this.isEnable(msg);
+    const stat = this.isEnable(msg);
     const [maxChars, maxLines] = this.localSets;
     const [timeout, maxTPU] = this.params;
     sendMsg(this.idChat, `
-Current status: \`${this.stat.toUpperCase()}\`
+Current status: \`${stat.toUpperCase()}\`
 Max characters: \`${maxChars}\`
 Max lines: \`${maxLines}\`
 Time limit: \`${timeout} seconds\`
@@ -128,7 +132,8 @@ Max tasks per user: \`${maxTPU}\``,
     this.optMsg);
   },
   '/globalenable': function(msg) {
-    if (this.isEnable(msg)) return;
+    const stat = this.isEnable(msg);
+    if (stat === 'enabled') return;
     if (msg.from.id === adminId) {
       const changeStat = change('stat');
       changeStat(0, globSets, this.params, statOn);
@@ -138,7 +143,8 @@ Max tasks per user: \`${maxTPU}\``,
     }
   },
   '/globaldisable': function(msg) {
-    if (!this.isEnable(msg)) return;
+    const stat = this.isEnable(msg);
+    if (stat === 'globally disabled') return;
     if (msg.from.id === adminId) {
       const changeStat = change('stat');
       changeStat(0, globSets, this.params, statOff);
@@ -148,7 +154,8 @@ Max tasks per user: \`${maxTPU}\``,
     }
   },
   '/maxchars': async function(msg) {
-    if (!this.isEnable(msg)) return;
+    const stat = this.isEnable(msg);
+    if (stat === 'locally disabled' || stat === 'globally disabled') return;
     const hdl = getHdl(msg);
     const match = parseInt(msg.text.slice(hdl.length), 10);
     const access = (this.type === 'private' || await isAdmin(bot, msg));
@@ -165,7 +172,8 @@ Max tasks per user: \`${maxTPU}\``,
     }
   },
   '/maxlines': async function(msg) {
-    if (!this.isEnable(msg)) return;
+    const stat = this.isEnable(msg);
+    if (stat === 'locally disabled' || stat === 'globally disabled') return;
     const hdl = getHdl(msg);
     const match = parseInt(msg.text.slice(hdl.length), 10);
     const access = (this.type === 'private' || await isAdmin(bot, msg));
@@ -182,7 +190,8 @@ Max tasks per user: \`${maxTPU}\``,
     }
   },
   '/timeout': function(msg) {
-    if (!this.isEnable(msg)) return;
+    const stat = this.isEnable(msg);
+    if (stat === 'locally disabled' || stat === 'globally disabled') return;
     const hdl = getHdl(msg);
     const match = parseFloat(msg.text.slice(hdl.length));
     if (msg.from.id === adminId) {
@@ -198,7 +207,8 @@ Max tasks per user: \`${maxTPU}\``,
     }
   },
   '/maxtpu': function(msg) {
-    if (!this.isEnable(msg)) return;
+    const stat = this.isEnable(msg);
+    if (stat === 'locally disabled' || stat === 'globally disabled') return;
     const hdl = getHdl(msg);
     const match = parseInt(msg.text.slice(hdl.length), 10);
     if (msg.from.id === adminId) {
