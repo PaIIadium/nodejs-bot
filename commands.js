@@ -39,11 +39,14 @@ const cmdList = {
     this.params = globSets.get(0);
     this.data = this.type === 'private' ? userSets : groupSets;
     this.localSets = getSets(this.idChat, this.data);
-    const stat = checkStatus(msg, this.params, this.localSets);
-    return stat;
+    this.stat = checkStatus(msg, this.params, this.localSets);
+    return this.stat;
   },
   init(handler, msg, cmd) {
+    this.isEnable(msg);
+    const stat = this.stat;
     if (cmd === '/node') {
+      if (stat === 'locally disabled' || stat === 'globally disabled') return;
       const params = globSets.get(0);
       const maxTPU = params[1];
       handler.inQueue(msg, cmd, maxTPU);
@@ -52,15 +55,13 @@ const cmdList = {
     }
   },
   '/node': function(msg, handler) {
-    const stat = this.isEnable(msg);
-    if (stat === 'locally disabled' || stat === 'globally disabled') return;
     const hdl = getHdl(msg);
     const match = msg.text.slice(hdl.length);
     console.log('@' + msg.from.username + ':' + match);
     const code = escShellArg(match);
     const [maxChars, maxLines] = this.localSets;
     const timeout = this.params[0];
-    const bashCmd = `echo ${code} | su nodeuser -c 'timeout ${timeout}s node'`;
+    const bashCmd = `echo ${code} | runuser -l nodeuser -c 'timeout ${timeout}s node'`;
     const processing = (err, stdout, stderr) => {
       console.log('Error: :' + stdout + '\nStdout: ' + stdout + '\nStderr: ' + stderr);
       if (err) {
@@ -92,12 +93,12 @@ const cmdList = {
     exec(bashCmd, processing);
   },
   '/start': function(msg) {
-    const stat = this.isEnable(msg);
+    const stat = this.stat;
     if (stat === 'locally disabled' || stat === 'globally disabled') return;
     sendMsg(msg.chat.id, ans.onStart, this.optMsg);
   },
   '/enable': async function(msg) {
-    const stat = this.isEnable(msg);
+    const stat = this.stat;
     if (stat === 'enabled' || this.type === 'private') return;
     const access = await isAdmin(bot, msg);
     if (access) {
@@ -109,7 +110,7 @@ const cmdList = {
     }
   },
   '/disable': async function(msg) {
-    const stat = this.isEnable(msg);
+    const stat = this.stat;
     if (stat === 'locally disabled' || stat === 'globally disabled') return;
     const access = await isAdmin(bot, msg);
     if (access) {
@@ -121,7 +122,7 @@ const cmdList = {
     }
   },
   '/status': function(msg) {
-    const stat = this.isEnable(msg);
+    const stat = this.stat;
     const [maxChars, maxLines] = this.localSets;
     const [timeout, maxTPU] = this.params;
     sendMsg(this.idChat, `
@@ -133,7 +134,7 @@ Max tasks per user: \`${maxTPU}\``,
     this.optMsg);
   },
   '/globalenable': function(msg) {
-    const stat = this.isEnable(msg);
+    const stat = this.stat;
     if (stat === 'enabled') return;
     if (msg.from.id === adminId) {
       const changeStat = change('stat');
@@ -144,7 +145,7 @@ Max tasks per user: \`${maxTPU}\``,
     }
   },
   '/globaldisable': function(msg) {
-    const stat = this.isEnable(msg);
+    const stat = this.stat;
     if (stat === 'globally disabled') return;
     if (msg.from.id === adminId) {
       const changeStat = change('stat');
@@ -155,7 +156,7 @@ Max tasks per user: \`${maxTPU}\``,
     }
   },
   '/maxchars': async function(msg) {
-    const stat = this.isEnable(msg);
+    const stat = this.stat;
     if (stat === 'locally disabled' || stat === 'globally disabled') return;
     const hdl = getHdl(msg);
     const match = parseInt(msg.text.slice(hdl.length), 10);
@@ -173,7 +174,7 @@ Max tasks per user: \`${maxTPU}\``,
     }
   },
   '/maxlines': async function(msg) {
-    const stat = this.isEnable(msg);
+    const stat = this.stat;
     if (stat === 'locally disabled' || stat === 'globally disabled') return;
     const hdl = getHdl(msg);
     const match = parseInt(msg.text.slice(hdl.length), 10);
@@ -191,7 +192,7 @@ Max tasks per user: \`${maxTPU}\``,
     }
   },
   '/timeout': function(msg) {
-    const stat = this.isEnable(msg);
+    const stat = this.stat;
     if (stat === 'locally disabled' || stat === 'globally disabled') return;
     const hdl = getHdl(msg);
     const match = parseFloat(msg.text.slice(hdl.length));
@@ -208,7 +209,7 @@ Max tasks per user: \`${maxTPU}\``,
     }
   },
   '/maxtpu': function(msg) {
-    const stat = this.isEnable(msg);
+    const stat = this.stat;
     if (stat === 'locally disabled' || stat === 'globally disabled') return;
     const hdl = getHdl(msg);
     const match = parseInt(msg.text.slice(hdl.length), 10);
