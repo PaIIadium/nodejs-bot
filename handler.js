@@ -1,8 +1,8 @@
 'use strict';
 
-const { getCmd, sendMsg, setOptMsg } = require('./functions');
-const ans = require('./answers.json');
-const { cmdList } = require('./commands');
+const { getCmd, sendMsg, setOptMsg } = require('/root/bot/functions');
+const ans = require('/root/bot/answers.json');
+const { cmdList } = require('/root/bot/commands');
 
 const handler = {
   queue: [],

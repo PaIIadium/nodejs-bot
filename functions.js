@@ -1,8 +1,8 @@
 'use strict';
 
-const bot = require('./bot');
+const bot = require('/root/bot/bot');
 const fs = require('fs');
-const adminId = parseInt(fs.readFileSync('./data/admin_id', 'utf8'), 10);
+const adminId = parseInt(fs.readFileSync('/root/bot/data/admin_id', 'utf8'), 10);
 
 const escShellArg = match => {
   const reg = /\/\//;

@@ -2,8 +2,8 @@
 
 const { exec } = require('child_process');
 const fs = require('fs');
-const ans = JSON.parse(fs.readFileSync('./answers.json'));
-const bot = require('./bot');
+const ans = JSON.parse(fs.readFileSync('/root/bot/answers.json'));
+const bot = require('/root/bot/bot');
 const {
   getHdl,
   escShellArg,
@@ -19,9 +19,9 @@ const {
   getSets
 } = require('./functions');
 
-const { globSets, groupSets, userSets } = require('./collections');
+const { globSets, groupSets, userSets } = require('/root/bot/collections');
 
-const adminId = parseInt(fs.readFileSync('./data/admin_id', 'utf8'), 10);
+const adminId = parseInt(fs.readFileSync('/root/bot/data/admin_id', 'utf8'), 10);
 const minChars = 1;
 const maxChars = 4000;
 const minLines = 1;
