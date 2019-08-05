@@ -2,7 +2,7 @@
 
 const bot = require('./bot');
 const fs = require('fs');
-const adminId = parseInt(fs.readFileSync('/root/bot/nodejs-bot/data/admin_id', 'utf8'), 10);
+const adminId = parseInt(fs.readFileSync('./data/admin_id', 'utf8'), 10);
 
 const escShellArg = match => {
   const reg = /\/\//;
