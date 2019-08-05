@@ -2,8 +2,8 @@
 
 const { exec } = require('child_process');
 const fs = require('fs');
-const ans = JSON.parse(fs.readFileSync('/root/bot/nodejs-bot/answers.json'));
-const bot = require('/root/bot/nodejs-bot/bot');
+const ans = JSON.parse(fs.readFileSync('./answers.json'));
+const bot = require('./bot');
 const {
   getHdl,
   escShellArg,
@@ -19,9 +19,9 @@ const {
   getSets
 } = require('./functions');
 
-const { globSets, groupSets, userSets } = require('/root/bot/nodejs-bot/collections');
+const { globSets, groupSets, userSets } = require('./collections');
 
-const adminId = parseInt(fs.readFileSync('/root/bot/nodejs-bot/data/admin_id', 'utf8'), 10);
+const adminId = parseInt(fs.readFileSync('./data/admin_id', 'utf8'), 10);
 const minChars = 1;
 const maxChars = 4000;
 const minLines = 1;
@@ -63,7 +63,6 @@ const cmdList = {
     const timeout = this.params[0];
     const bashCmd = `echo ${code} | runuser -l nodeuser -c 'timeout ${timeout}s node'`;
     const processing = (err, stdout, stderr) => {
-      console.log('Error: :' + stdout + '\nStdout: ' + stdout + '\nStderr: ' + stderr);
       if (err) {
         const timeoutCode = 124;
         if (err.code === timeoutCode) {

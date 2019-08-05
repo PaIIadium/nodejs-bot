@@ -4,9 +4,9 @@ const {
   getCmd,
   sendMsg,
   setOptMsg
-} = require('/root/bot/nodejs-bot/functions');
-const ans = require('/root/bot/nodejs-bot/answers.json');
-const { cmdList } = require('/root/bot/nodejs-bot/commands');
+} = require('./functions');
+const ans = require('./answers.json');
+const { cmdList } = require('./commands');
 
 const handler = {
   queue: [],
