@@ -63,7 +63,6 @@ const cmdList = {
     const timeout = this.params[0];
     const bashCmd = `sudo echo ${code} | runuser -l nodeuser -c 'timeout ${timeout}s node'`;
     const processing = (err, stdout, stderr) => {
-      console.log(err, stdout, stderr);
       if (err) {
         const timeoutCode = 124;
         if (err.code === timeoutCode) {
