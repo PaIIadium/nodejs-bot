@@ -63,6 +63,7 @@ const cmdList = {
     const timeout = this.params[0];
     const bashCmd = `sudo echo ${code} | su nodeuser -c 'timeout ${timeout + 0.45}s node'`;
     const processing = (err, stdout, stderr) => {
+      console.log('Stdout:' + stdout + 'Stderr: ' + stderr + 'Err: ' + err);
       if (err) {
         const timeoutCode = 124;
         if (err.code === timeoutCode) {
@@ -110,7 +111,7 @@ const cmdList = {
   },
   '/disable': async function(msg) {
     const stat = this.stat;
-    if (stat === 'locally disabled' || stat === 'globally disabled') return;
+    if (stat === 'locally disabled' || stat === 'globally disabled' || this.type === 'private') return;
     const access = await isAdmin(bot, msg);
     if (access) {
       const changeStat = change('stat');
