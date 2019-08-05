@@ -63,7 +63,6 @@ const cmdList = {
     const timeout = this.params[0];
     const bashCmd = `sudo echo ${code} | su nodeuser -c 'timeout ${timeout + 0.45}s node'`;
     const processing = (err, stdout, stderr) => {
-      console.log('Stdout:' + stdout + 'Stderr: ' + stderr + 'Err: ' + err);
       if (err) {
         const timeoutCode = 124;
         if (err.code === timeoutCode) {
@@ -85,6 +84,7 @@ const cmdList = {
         } else {
           const res = inMono(formFlood(msg, maxChars, maxLines)) + ans.onFlood;
           sendMsg(this.idChat, res, this.optMsg);
+          console.log('Msg:' + res);
         }
       }
       handler.queue.shift();
