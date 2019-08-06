@@ -14,7 +14,7 @@ To store user and group settings, [user_settings.csv](https://github.com/PaIIadi
 # How security of code execution is achieved?
 To eliminate the possibility of user interaction with the file system and server-side processes, a separate process running from another user is used to execute the code:
 
-`echo ${code} | su nodeuser -c 'timeout ${timeout}s node'`
+`sudo echo ${code} | su nodeuser -c 'timeout ${timeout}s node'`
 
 This user (nodeuser) has no rights to intervene in the server system. 
 
