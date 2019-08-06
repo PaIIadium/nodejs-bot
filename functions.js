@@ -23,11 +23,11 @@ const formFlood = (lines, maxChars, maxLines) => {
   let res = '';
   for (const val of lines) {
     if (count < maxLines) {
-      if ((res + val).length - count < maxChars) {
+      if ((res + val).length < maxChars) {
         res += val + '\n';
         count++;
       } else {
-        const lengthLast = maxChars - res.length + count
+        const lengthLast = maxChars - res.length;
         res += val.slice(0, lengthLast);
         break;
       }
@@ -70,8 +70,8 @@ const buildMap = (file, defSets) => {
   lines.shift();
   lines.pop();
   const dataset = lines.map(line => line.split(',')
-                                        .map(val => +val)
-                            );
+    .map(val => +val)
+  );
   for (const record of dataset) {
     const id = record[0];
     const data = record.slice(1);
